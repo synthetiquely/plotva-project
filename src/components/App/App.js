@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import { Layout } from '../Layout/Layout';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
 import { SearchInput } from '../SearchInput/SearchInput';
 import { ChatInput } from '../ChatInput/ChatInput';
-import { Contacts } from '../Contacts/Contacts';
 import { UserList } from '../UserList/UserList';
 import { ChatsPage } from '../ChatsPage/ChatsPage';
 import { Chat } from '../Chat/Chat';
 import { ChatForm } from '../ChatForm/ChatForm';
 import { ProfilePage } from '../ProfilePage/ProfilePage';
-import { Init } from '../Init/Init';
 import { Login } from '../Login/Login';
 
 const ContactsPage = () => (
@@ -41,41 +40,6 @@ const ProfileView = () => (
     header={<Header type="profile" title="Profile" subtitle="" />}
     content={<ProfilePage />}
     footer={<Footer path="Settings" />}
-  />
-);
-
-const SearchPage = () => (
-  <Layout
-    header={<Header type="search" title="" subtitle="" />}
-    content={
-      <Contacts
-        contacts={[
-          {
-            userName: 'Aaron A Aaronson',
-            content: 'Some message',
-            contentType: 'message',
-            time: '9:30',
-            size: 'medium',
-            checked: true,
-            count: 3,
-            icon: 'message-read',
-          },
-          {
-            userName: 'Aaron A Aaronson',
-            content: 'online',
-            contentType: 'online',
-            size: 'medium',
-          },
-          {
-            userName: 'Aaron A Aaronson',
-            content: 'Some message',
-            contentType: 'message',
-            size: 'medium',
-          },
-        ]}
-      />
-    }
-    footer={<Footer />}
   />
 );
 
@@ -113,9 +77,6 @@ export class App extends Component {
         <Route exact path="/chats" component={ChatView} />
         <Route exact path="/contacts" component={ContactsPage} />
         <Route exact path="/chat/:id" component={DialogPageContainer} />
-        <Route exact path="/search" component={SearchPage} />
-        <Route exact path="/init/create/:name" component={Init} />
-        <Route exact path="/init/join/:roomId" component={Init} />
         <Route exact path="/profile" component={ProfileView} />
         <Route exact path="/create_chat" component={CreateChatPage} />
       </Switch>

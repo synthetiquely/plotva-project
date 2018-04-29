@@ -1,20 +1,15 @@
-import React, { Component } from 'react';
-import { withRouter, Redirect } from 'react-router-dom';
+import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter, Redirect } from 'react-router-dom';
 
-class LoginComponent extends Component {
-  constructor() {
-    super();
+const LoginComponent = ({ user }) => {
+  if (user.isFirstLogin) {
+    return <Redirect to="/profile" />;
   }
-  render() {
-    if (this.props.user.isFirstLogin) {
-      return <Redirect to="/profile" />
-    }
-    return <Redirect to="/chats" />
-  }
-}
+  return <Redirect to="/chats" />;
+};
 
-const stateToProps = (state) => ({
+const stateToProps = state => ({
   user: state.user.user,
 });
 

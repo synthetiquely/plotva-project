@@ -1,4 +1,4 @@
-const {ObjectId} = require('mongodb');
+const { ObjectId } = require('mongodb');
 
 /**
  * @typedef {{
@@ -8,50 +8,49 @@ const {ObjectId} = require('mongodb');
  * }} Pagination<T>
  */
 
-
 /**
  * Create pagination
  *
  * @param {Collection} collection
  * @param filter
  */
-async function pageableCollection(collection, {lastId, order, limit = 10, ...query} = {}) {
-    let count = await collection.find(query).count();
+async function pageableCollection(collection, { lastId, order, limit = 10, ...query } = {}) {
+  let count = await collection.find(query).count();
 
-    if (lastId) {
-        query._id = {
-            $gt: ObjectId(lastId.toString())
-        };
-    }
-
-    let queryBuilder = collection.find(query, {limit});
-
-    if (order) {
-        queryBuilder = queryBuilder.sort(order);
-    }
-
-    if (typeof query._id === 'string') {
-        query._id = ObjectId(query._id.toString());
-    }
-
-    let cursor = await queryBuilder,
-        items = await cursor.toArray(),
-        next = null;
-
-    if (items.length === limit) {
-        next = {
-            limit,
-            order,
-            lastId: items[items.length - 1]._id,
-            ...query,
-        };
-    }
-
-    return {
-        count,
-        items,
-        next
+  if (lastId) {
+    query._id = {
+      $gt: ObjectId(lastId.toString()),
     };
+  }
+
+  let queryBuilder = collection.find(query, { limit });
+
+  if (order) {
+    queryBuilder = queryBuilder.sort(order);
+  }
+
+  if (typeof query._id === 'string') {
+    query._id = ObjectId(query._id.toString());
+  }
+
+  let cursor = await queryBuilder;
+  let items = await cursor.toArray();
+  let next = null;
+
+  if (items.length === limit) {
+    next = {
+      limit,
+      order,
+      lastId: items[items.length - 1]._id,
+      ...query,
+    };
+  }
+
+  return {
+    count,
+    items,
+    next,
+  };
 }
 
 /**
@@ -63,20 +62,16 @@ async function pageableCollection(collection, {lastId, order, limit = 10, ...que
  * @return {Promise<*>}
  */
 async function insertOrUpdateEntity(collection, data) {
-    if (data._id) {
-        let result = await collection.findOneAndUpdate(
-            {_id: data._id},
-            data,
-            {returnNewDocument: true}
-        );
-    } else {
-        let result = await collection.insertOne(data);
-        data._id = result.insertedId;
-    }
-    return collection.findOne({_id: data._id});
+  if (data._id) {
+    await collection.findOneAndUpdate({ _id: data._id }, data, { returnNewDocument: true });
+  } else {
+    let result = await collection.insertOne(data);
+    data._id = result.insertedId;
+  }
+  return collection.findOne({ _id: data._id });
 }
 
 module.exports = {
-    pageableCollection,
-    insertOrUpdateEntity
+  pageableCollection,
+  insertOrUpdateEntity,
 };

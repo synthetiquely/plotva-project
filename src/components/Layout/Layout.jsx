@@ -1,30 +1,12 @@
-import React, {Component} from 'react';
+import React from 'react';
 import './Layout.css';
 
-export class Layout extends Component {
-  render() {
-    let {header, content, footer} = this.props;
-    return (
-      <div className="layout">
-        {header && (
-          <header className="layout__header">
-            {header}
-          </header>
-        )}
+export const Layout = ({ header, content, footer }) => (
+  <div className="layout">
+    {header && <header className="layout__header">{header}</header>}
 
-        {content && (
-          <main className="layout__content">
-            {content}
-          </main>
-        )}
+    {content && <main className="layout__content">{content}</main>}
 
-        {footer && (
-          <footer className="layout__footer">
-            {footer}
-          </footer>
-        )}
-      </div>
-    );
-  }
-}
-
+    {footer && <footer className="layout__footer">{footer}</footer>}
+  </div>
+);

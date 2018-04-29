@@ -1,6 +1,6 @@
 {
-  "short_name": "Plotva-Messenger",
-  "name": "Shevelis', Plotva!",
+  "short_name": "Yandex Messenger",
+  "name": "Mobile Messenger",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,6 +10,6 @@
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#4169e1",
-  "background_color": "#4169e1"
+  "theme_color": "#fab81e",
+  "background_color": "#fab81e"
 }

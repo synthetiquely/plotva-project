@@ -12,7 +12,7 @@ export const InputBar = ({ value, onSubmit, ...rest }) => {
     });
   };
 
-  const onKeyDown = (e) => {
+  const onKeyDown = e => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       if (onSubmit) {
         onSubmit(e);

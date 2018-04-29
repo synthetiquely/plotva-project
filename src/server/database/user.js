@@ -1,8 +1,7 @@
-const {ObjectId} = require('mongodb');
+const { ObjectId } = require('mongodb');
 
-const {getSessionInfo, saveSessionInfo} = require('./session');
-const {pageableCollection, insertOrUpdateEntity} = require('./helpers');
-const faker = require('faker');
+const { getSessionInfo, saveSessionInfo } = require('./session');
+const { pageableCollection, insertOrUpdateEntity } = require('./helpers');
 
 const TABLE = 'users';
 
@@ -23,28 +22,28 @@ const TABLE = 'users';
  * @returns {Promise<User>}
  */
 async function findUserBySid(db, sid, user) {
-    let session = await getSessionInfo(db, sid);
+  let session = await getSessionInfo(db, sid);
 
-    if (!session.userId) {
-        // Create fake user
+  if (!session.userId) {
+    // Create fake user
 
-        let user = {
-            name: '',
-            email: '',
-            phone: '',
-            isFirstLogin: true,
-        };
+    let user = {
+      name: '',
+      email: '',
+      phone: '',
+      isFirstLogin: true,
+    };
 
-        user = await saveUser(db, user);
+    user = await saveUser(db, user);
 
-        session.userId = user._id;
+    session.userId = user._id;
 
-        await saveSessionInfo(db, session);
+    await saveSessionInfo(db, session);
 
-        return user;
-    } else {
-        return db.collection(TABLE).findOne({_id: session.userId});
-    }
+    return user;
+  } else {
+    return db.collection(TABLE).findOne({ _id: session.userId });
+  }
 }
 
 /**
@@ -54,7 +53,7 @@ async function findUserBySid(db, sid, user) {
  * @returns {Promise<User>}
  */
 async function getUser(db, userId) {
-    return db.collection(TABLE).findOne({_id: ObjectId(userId.toString())});
+  return db.collection(TABLE).findOne({ _id: ObjectId(userId.toString()) });
 }
 
 /**
@@ -64,11 +63,11 @@ async function getUser(db, userId) {
  * @returns {Promise<User>}
  */
 async function saveUser(db, user) {
-    if (user._id) {
-        user.isFirstLogin = false;
-        user._id = ObjectId(user._id.toString());
-    }
-    return insertOrUpdateEntity(db.collection(TABLE), user);
+  if (user._id) {
+    user.isFirstLogin = false;
+    user._id = ObjectId(user._id.toString());
+  }
+  return insertOrUpdateEntity(db.collection(TABLE), user);
 }
 
 /**
@@ -78,12 +77,12 @@ async function saveUser(db, user) {
  * @return {Promise<Pagination<User>>}
  */
 async function getUsers(db, filter) {
-    return pageableCollection(db.collection(TABLE), filter);
+  return pageableCollection(db.collection(TABLE), filter);
 }
 
 module.exports = {
-    findUserBySid,
-    getUsers,
-    getUser,
-    saveUser
+  findUserBySid,
+  getUsers,
+  getUser,
+  saveUser,
 };

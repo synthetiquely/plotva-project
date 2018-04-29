@@ -28,10 +28,12 @@ class UserListComponent extends PureComponent {
 
   componentWillUnmount() {
     const users = [].concat(this.props.users);
-    users.forEach(user => {user.checked = false});
+    users.forEach(user => {
+      user.checked = false;
+    });
 
-    this.props.dispatch(setUsers(users));        
-    this.props.dispatch(setSelectedUsers([]));    
+    this.props.dispatch(setUsers(users));
+    this.props.dispatch(setSelectedUsers([]));
   }
 
   async fetchNext() {
@@ -42,19 +44,20 @@ class UserListComponent extends PureComponent {
     try {
       let resp = await api.getUsers(next);
       const users = this.props.users.concat(
-          resp.items.map(user => {
-            const status = user.online ? 'online' : 'offline';
-            return {
-              _id: user._id,
-              userName: user.name ? user.name : 'Anonymous',
-              avatar: user.img,
-              size: 'small',
-              content: status,
-              contentType: status,
-            };
-          }))
-          this.props.dispatch(setUsers(users));
-          this.props.dispatch(setNext(resp.next));
+        resp.items.map(user => {
+          const status = user.online ? 'online' : 'offline';
+          return {
+            _id: user._id,
+            userName: user.name ? user.name : 'Anonymous',
+            avatar: user.img,
+            size: 'small',
+            content: status,
+            contentType: status,
+          };
+        }),
+      );
+      this.props.dispatch(setUsers(users));
+      this.props.dispatch(setNext(resp.next));
     } catch (err) {
       console.error(err);
       this.setState({ error: err });
@@ -66,9 +69,9 @@ class UserListComponent extends PureComponent {
     const selectedUsers = [].concat(this.props.selectedUsers);
     const current = users[index];
 
-    if (!current.checked){
+    if (!current.checked) {
       selectedUsers.push(current);
-      this.props.dispatch(setSelectedUsers(selectedUsers))
+      this.props.dispatch(setSelectedUsers(selectedUsers));
     } else {
       let user = selectedUsers.find(user => user._id === current._id);
       let deleteIndex = selectedUsers.indexOf(user);
@@ -78,7 +81,6 @@ class UserListComponent extends PureComponent {
 
     current.checked = !current.checked;
     this.props.dispatch(setUsers(users));
-    
   }
 
   render() {
@@ -89,22 +91,27 @@ class UserListComponent extends PureComponent {
     }
     return (
       <React.Fragment>
-        {
-          createChat
-          ? false
-          : (
-            <Contact
-              userName={user.name}
-              content={user.phone}
-              avatar={user.img}
-              size="large"
-              contentType="message"
-              color="7"
-            />
-          )
-        }
+        {createChat ? (
+          false
+        ) : (
+          <Contact
+            userName={user.name}
+            content={user.phone}
+            avatar={user.img}
+            size="large"
+            contentType="message"
+            color="7"
+          />
+        )}
         <InfiniteScroller loadMore={this.fetchNext}>
-          <Contacts type="contactList" contacts={users} user={user} search={current} addToChat={this.addToChat} createChat={createChat} />
+          <Contacts
+            type="contactList"
+            contacts={users}
+            user={user}
+            search={current}
+            addToChat={this.addToChat}
+            createChat={createChat}
+          />
           {error ? <Error code={FETCH_CONTACTS_ERROR} /> : null}
         </InfiniteScroller>
       </React.Fragment>

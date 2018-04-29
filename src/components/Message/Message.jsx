@@ -1,15 +1,15 @@
 import React from 'react';
 import './message.css';
-import {Icon} from "../Icon/Icon";
+import { Icon } from '../Icon/Icon';
 
 const formatOptions = {
   hour: 'numeric',
   minute: 'numeric',
 };
 
-const formatter = new Intl.DateTimeFormat('ru-RU', formatOptions)
+const formatter = new Intl.DateTimeFormat('ru-RU', formatOptions);
 
-export const Message = ({ isMy, text, status = 'sent', time }) => {
+export const Message = ({ isMy, text, time, status = 'sent' }) => {
   const date = new Date(time);
   const timeFormatted = formatter.format(date);
   return (
@@ -17,7 +17,7 @@ export const Message = ({ isMy, text, status = 'sent', time }) => {
       <div className={`message ${isMy ? 'message_my' : ''}`}>
         {text}
         <span className="message__time">{timeFormatted}</span>
-        <Icon type={`message-${status}`}/>
+        <Icon type={`message-${status}`} />
       </div>
     </div>
   );

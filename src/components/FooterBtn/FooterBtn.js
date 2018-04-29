@@ -1,15 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './FooterBtn.css';
-import {Icon} from "../Icon/Icon";
+import { Icon } from '../Icon/Icon';
 
-class FooterBtn extends Component {
-  render() {
-    return (
-      <div onClick={this.props.onClick} className={this.props.active?"footer-btn":"footer-btn_passive"}>
-        <Icon type={this.props.icon} alt="" />
-        <p className="footer-btn__description">{this.props.description}</p>
-      </div>
-    );
-  }
-}
-export default FooterBtn;
+export const FooterBtn = ({ active, icon, description, onClick }) => (
+  <div onClick={onClick} className={active ? 'footer-btn' : 'footer-btn_passive'}>
+    <Icon type={icon} alt="" />
+    <p className="footer-btn__description">{description}</p>
+  </div>
+);

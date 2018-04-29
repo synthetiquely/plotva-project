@@ -12,10 +12,14 @@ export const registerSocketEventListeners = async store => {
       },
     ];
 
-    new Notification('New message', {
-      body: result.message,
-      icon: '/favicon.ico',
-    });
+    try {
+      new Notification('New message', {
+        body: result.message,
+        icon: '/favicon.ico',
+      });
+    } catch (error) {
+      console.log('Notification error', error);
+    }
 
     store.dispatch(
       appendMessages({

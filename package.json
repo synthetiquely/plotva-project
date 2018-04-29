@@ -1,9 +1,9 @@
 {
-  "name": "shri-boilerplate",
+  "name": "yandex-messenger",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:3001/",
-  "homepage": "https://yandex-shri-minsk-2018.github.io/plotva-project/",
+  "homepage": "https://synthetiquely.github.io/plotva-project/",
   "dependencies": {
     "babel-core": "^6.26.0",
     "classnames": "^2.2.5",

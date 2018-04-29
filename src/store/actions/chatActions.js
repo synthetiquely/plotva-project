@@ -6,7 +6,6 @@ export const setChatName = query => ({
   payload: query,
 });
 
-
 export const setChatInfo = payload => {
   return {
     payload,

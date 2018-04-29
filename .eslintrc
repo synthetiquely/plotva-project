@@ -1,7 +1,8 @@
 {
   "extends": ["eslint:recommended", "react", "prettier"],
   "rules": {
-    "no-new": [1]
+    "no-new": [0],
+    "new-cap": [0]
   },
   "parser": "babel-eslint",
   "env": {
