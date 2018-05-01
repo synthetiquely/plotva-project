@@ -16,7 +16,7 @@ import { Login } from '../Login/Login';
 
 const ContactsPage = () => (
   <Layout
-    header={<Header type="contacts" title="Contacts" subtitle="" />}
+    header={<Header type="contacts" title="Контакты" subtitle="" />}
     content={
       <React.Fragment>
         <SearchInput />
@@ -29,7 +29,7 @@ const ContactsPage = () => (
 
 const ChatView = () => (
   <Layout
-    header={<Header type="chats" title="Chats" subtitle="" />}
+    header={<Header type="chats" title="Чаты" subtitle="" />}
     content={<ChatsPage />}
     footer={<Footer path="Chats" />}
   />
@@ -37,7 +37,7 @@ const ChatView = () => (
 
 const ProfileView = () => (
   <Layout
-    header={<Header type="profile" title="Profile" subtitle="" />}
+    header={<Header type="profile" title="Профиль" subtitle="" />}
     content={<ProfilePage />}
     footer={<Footer path="Settings" />}
   />
@@ -45,7 +45,7 @@ const ProfileView = () => (
 
 const DialogPage = ({ chat }) => (
   <Layout
-    header={<Header type="dialog" title={chat.title || 'Loading...'} subtitle={chat.subtitle || 'Loading...'} />}
+    header={<Header type="dialog" title={chat.title || 'Загружаем...'} subtitle={chat.subtitle || 'Загружаем...'} />}
     content={<Chat />}
     footer={<ChatForm />}
   />
@@ -53,7 +53,7 @@ const DialogPage = ({ chat }) => (
 
 const CreateChatPage = () => (
   <Layout
-    header={<Header type="contacts" title="Contacts" subtitle="" createChat />}
+    header={<Header type="contacts" title="Контакты" subtitle="" createChat />}
     content={
       <React.Fragment>
         <ChatInput />

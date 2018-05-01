@@ -37,7 +37,7 @@
 }
 
 .content__counter {
-  background: royalblue;
+  background: #fab81e;
   border-radius: 12px;
   text-align: center;
   color: white;
@@ -57,7 +57,7 @@
 }
 
 .content__name {
-  font-weight: bold;
+  font-weight: 600;
   padding-right: 10px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -80,7 +80,7 @@
 }
 
 .content__text_online {
-  color: #0981e1;
+  color: #fab81e;
 }
 
 .contact_small .content__name {

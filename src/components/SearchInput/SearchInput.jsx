@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import './SearchInput.css';
+import { Icon } from '../Icon/Icon';
 import { setSearch } from '../../store/actions/searchActions';
 
 const stateToProps = state => ({
@@ -30,12 +31,15 @@ export const SearchInput = connect(stateToProps)(
 
     render() {
       return (
-        <input
-          className="search"
-          type="search"
-          placeholder="Search for contacts or usernames"
-          onChange={this.getSearchRequest}
-        />
+        <form className="search-input">
+          <Icon className="search-input__icon" type="search" />
+          <input
+            className="search-input__input"
+            type="search"
+            placeholder="Искать по контактам..."
+            onChange={this.getSearchRequest}
+          />
+        </form>
       );
     }
   },

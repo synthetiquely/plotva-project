@@ -73,7 +73,7 @@ async function createRoom(db, currentUser, room) {
 
   if (!existsRoom) {
     // If we clone room
-    Reflect.delete(room._id);
+    delete room._id;
 
     room.users = room.users || [];
     room.users.push(currentUser._id);

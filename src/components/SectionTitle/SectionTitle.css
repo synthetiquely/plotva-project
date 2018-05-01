@@ -3,9 +3,9 @@
   padding: 6.5px 10px;
   margin: 0 -8px;
   font-size: 12px;
+  font-weight: 600;
   letter-spacing: 1px;
   line-height: 15px;
   text-transform: uppercase;
-  color: #8d8d8e;
-  background-color: #ededed;
+  color: #333;
 }

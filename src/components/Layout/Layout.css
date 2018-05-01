@@ -19,13 +19,18 @@ body,
 }
 
 .layout__header {
-  background-color: #f8f8f8;
+  background-color: #fff;
   padding: 0 8px;
   flex: 1 0 auto;
+  border-bottom: 1px solid #f8f8f8;
+  box-shadow: 0 0 0.1px rgba(0, 0, 0, 0.1);
 }
 
 .layout__footer {
   flex: 1 0 auto;
+  padding-top: 5px;
+  border-top: 1px solid #f8f8f8;
+  box-shadow: 0 0 0.1px rgba(0, 0, 0, 0.1);
 }
 
 .layout__content {

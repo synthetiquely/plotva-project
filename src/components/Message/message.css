@@ -1,11 +1,11 @@
 .message-wrapper {
   display: flex;
-  padding: 0 56px 6px 6px;
+  padding: 6px 56px 6px 6px;
 }
 
 .message-wrapper_my {
   flex-direction: row-reverse;
-  padding: 0 6px 6px 56px;
+  padding: 6px 6px 6px 56px;
 }
 
 .message {
@@ -26,10 +26,10 @@
 }
 
 .message_my {
-  border-color: #bad5c3;
-  border-bottom-right-radius: 0;
+  border-color: #f2f6fa;
+  border-top-right-radius: 0;
   border-bottom-left-radius: 16px;
-  background-color: #e1ffc7;
+  background-color: #f2f6fa;
 }
 
 .message__time {
@@ -41,7 +41,7 @@
 .message__time {
   position: absolute;
   bottom: 3px;
-  height: 10px;
+  right: 5px;
   font-size: 10px;
   line-height: 10px;
 }
@@ -52,7 +52,7 @@
 
 .message_my .message__time {
   right: 20px;
-  color: #19c700;
+  color: #555;
 }
 
 .message .icon {

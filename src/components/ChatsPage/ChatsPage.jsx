@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Contacts } from '../Contacts/Contacts';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
+import { Spinner } from '../Spinner/Spinner';
 import { NoResults } from '../NoResults/NoResults';
 import { Error } from '../Error/Error';
 import { FETCH_ROOMS_ERROR } from '../../errorCodes';
@@ -10,6 +11,7 @@ export class ChatsPage extends PureComponent {
   constructor() {
     super();
     this.state = {
+      isLoading: false,
       rooms: [],
       next: null,
       error: null,
@@ -23,12 +25,16 @@ export class ChatsPage extends PureComponent {
 
   async fetchNext(next = this.state.next) {
     try {
+      this.setState({
+        isLoading: true,
+      });
       if (next) {
         const response = await this.fetchRooms(next);
         this.setState(prevState => {
           return {
             rooms: [...prevState.rooms, ...response.rooms],
             next: response.next,
+            isLoading: false,
           };
         });
         return response;
@@ -36,6 +42,7 @@ export class ChatsPage extends PureComponent {
     } catch (error) {
       this.setState({
         error,
+        isLoading: false,
       });
     }
   }
@@ -46,11 +53,11 @@ export class ChatsPage extends PureComponent {
       res.items.map(async room => {
         const messages = await api.getRoomMessages(room._id);
         let chatUser = await api.getUser(room.users[1]);
-        let chatName = room.users.length > 2 ? room.name || 'Group chat' : chatUser.name;
+        let chatName = room.users.length > 2 ? room.name || 'Групповой чат' : chatUser.name;
         return {
           _id: room._id,
           userName: chatName,
-          content: (messages.items[0] && messages.items[0].message) || 'No messages',
+          content: (messages.items[0] && messages.items[0].message) || 'Нет сообщений',
         };
       }),
     );
@@ -61,13 +68,16 @@ export class ChatsPage extends PureComponent {
   }
 
   render() {
-    const { rooms, error } = this.state;
-    if (!rooms.length && !error) {
-      return <NoResults text="No chats here yet..." />;
+    const { next, rooms, isLoading, error } = this.state;
+    if (!rooms.length && !isLoading) {
+      return <NoResults text="Нет активных чатов..." />;
     }
 
+    if (isLoading) {
+      return <Spinner />;
+    }
     return (
-      <InfiniteScroller hasMore={!!this.next} loadMore={this.fetchNext}>
+      <InfiniteScroller hasResults={!!rooms.length} hasMore={!!next} loadMore={this.fetchNext}>
         <Contacts contacts={rooms} search="" />
         {error ? <Error code={FETCH_ROOMS_ERROR} /> : null}
       </InfiniteScroller>

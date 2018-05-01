@@ -17,7 +17,9 @@ export const Message = ({ isMy, text, time, status = 'sent' }) => {
       <div className={`message ${isMy ? 'message_my' : ''}`}>
         {text}
         <span className="message__time">{timeFormatted}</span>
-        <Icon type={`message-${status}`} />
+        <span className="message__status">
+          <Icon type={`message-${status}`} />
+        </span>
       </div>
     </div>
   );

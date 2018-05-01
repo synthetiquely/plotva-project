@@ -57,7 +57,7 @@ class HeaderComponent extends Component {
       <div className={`header header_${size}`}>
         <div className="header__left">
           {type === 'search' && <SearchInput />}
-          {type === 'dialog' && <HeaderBtn onClick={this.props.history.goBack} type="back" txt="Back" />}
+          {type === 'dialog' && <HeaderBtn onClick={this.props.history.goBack} type="back" txt="Назад" />}
         </div>
 
         {title && (
@@ -82,10 +82,10 @@ class HeaderComponent extends Component {
           )}
           {type === 'search' && (
             <Link to="/contacts">
-              <Header type="action" txt="Cancel" />
+              <Header type="action" txt="Отменить" />
             </Link>
           )}
-          {type === 'dialog' && <Avatar size="xsmall" />}
+          {type === 'dialog' && <Avatar color="4" defaultName="C" size="xsmall" />}
         </div>
       </div>
     );

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Spinner } from '../Spinner/Spinner';
 import debounce from 'debounce';
 
 import './styles.css';
@@ -54,16 +55,17 @@ export class InfiniteScroller extends Component {
   }
 
   render() {
-    return this.state.isLoading ? (
-      'Loading...'
-    ) : (
+    const { isLoading } = this.state;
+    const { children, hasMore } = this.props;
+    return (
       <div className="infinite-scroller" ref={this.setRef}>
-        {this.props.children}
-        {this.props.hasMore ? (
+        {children}
+        {hasMore ? (
           <button className="infinite-scroller__button" onClick={this.loadMore}>
             Load more
           </button>
         ) : null}
+        {isLoading ? <Spinner /> : null}
       </div>
     );
   }

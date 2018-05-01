@@ -50,7 +50,7 @@ class ContactsComponent extends Component {
   render() {
     return (
       <React.Fragment>
-        <SectionTitle title="Contacts" />
+        <SectionTitle title="Контакты" />
         <div className="contacts">
           {this.props.contacts.map((contact, index) => {
             const props = {};

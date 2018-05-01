@@ -2,10 +2,7 @@
   display: flex;
   width: 100%;
   align-items: center;
-  margin: 5px 0 0;
-  padding: 5px;
-  background-color: #f9f9fa;
-  box-shadow: 0 -0.5px #b1b2b7;
+  padding: 0 5px 5px 5px;
 }
 
 .input-bar__input {
@@ -23,7 +20,8 @@
 
 .input-bar__input:focus,
 .input-bar__input:active {
-  outline: 1px solid #007aff;
+  border: 1px solid #fab81e;
+  outline: 1px solid #fab81e;
 }
 
 .input-bar__button {
@@ -42,5 +40,5 @@
 
 .input-bar__icon_active {
   filter: grayscale(0%);
-  color: #007aff;
+  color: #fab81e;
 }

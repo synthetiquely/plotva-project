@@ -13,7 +13,7 @@ export const appendMessages = payload => ({
 
 export const fetchMessages = roomId => async (dispatch, getState) => {
   const room = getState().messages[roomId];
-  const currentUserId = getState().user._id;
+  const currentUserId = getState().user.user._id;
   const hasMessages = room && room.messages.length > 0;
   let next = (room && room.next) || null;
 
@@ -58,7 +58,7 @@ export const fetchMessages = roomId => async (dispatch, getState) => {
 
 export const sendMessage = (roomId, messageText) => async (dispatch, getState) => {
   try {
-    const currentUserId = getState().user._id;
+    const currentUserId = getState().user.user._id;
     const response = await api.sendMessage(roomId, messageText);
     const message = [
       {

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import { Contacts } from '../Contacts/Contacts';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { Contact } from '../Contact/Contact';
@@ -87,21 +88,23 @@ class UserListComponent extends PureComponent {
     const { error } = this.state;
     const { users, user, createChat, current } = this.props;
     if (!users.length && !error) {
-      return <NoResults text="No contacts yet..." />;
+      return <NoResults text="Нет контактов..." />;
     }
     return (
       <React.Fragment>
         {createChat ? (
           false
         ) : (
-          <Contact
-            userName={user.name}
-            content={user.phone}
-            avatar={user.img}
-            size="large"
-            contentType="message"
-            color="7"
-          />
+          <Link to="/profile">
+            <Contact
+              userName={user.name}
+              content={user.phone}
+              avatar={user.img}
+              size="large"
+              contentType="message"
+              color="7"
+            />
+          </Link>
         )}
         <InfiniteScroller loadMore={this.fetchNext}>
           <Contacts

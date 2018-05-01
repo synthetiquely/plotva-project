@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Redirect } from 'react-router-dom';
 
-const LoginComponent = ({ user }) => {
+export const LoginComponent = ({ user }) => {
   if (user.isFirstLogin) {
     return <Redirect to="/profile" />;
   }

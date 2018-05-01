@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { FooterBtn } from '../FooterBtn/FooterBtn.js';
 import './Footer.css';
 
-const chats = 'Chats';
-const contacts = 'Contacts';
-const settings = 'Settings';
+const chats = 'Чаты';
+const contacts = 'Контакты';
+const settings = 'Профиль';
 
 export const Footer = ({ path }) => (
   <div className="footer">

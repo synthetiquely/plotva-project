@@ -20,7 +20,7 @@
 }
 
 .input-wrapper_file {
-  color: #007aff;
+  color: #ffdb4d;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -28,5 +28,6 @@
 
 .input-wrapper__input:focus,
 .input-wrapper__input:active {
-  outline: 1px solid #007aff;
+  border: 1px solid #ffdb4d;
+  outline: 1px solid #ffdb4d;
 }

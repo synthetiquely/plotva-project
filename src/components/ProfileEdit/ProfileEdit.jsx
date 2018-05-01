@@ -57,30 +57,24 @@ export class ProfileEditComponent extends Component {
     const { user } = this.props;
     return (
       <form className="profile-edit" onSubmit={this.onSubmit}>
-        <InputGroup
-          type="text"
-          name="name"
-          onInputChange={this.onInputChange}
-          value={user.name}
-          label="Enter your name"
-        />
+        <InputGroup type="text" name="name" onInputChange={this.onInputChange} value={user.name} label="Ваше имя" />
         <InputGroup
           type="email"
           name="email"
           onInputChange={this.onInputChange}
           value={user.email}
-          label="Enter your e-mail"
+          label="Ваш почтовый ящик"
         />
         <InputGroup
           type="tel"
           name="phone"
           onInputChange={this.onInputChange}
           value={user.phone}
-          label="Enter your phone number"
+          label="Ваш номер телефона"
         />
-        <InputGroup type="file" name="avatar" label="Attach avatar" />
+        <InputGroup type="file" name="avatar" label="Загрузить аватар" />
 
-        <Button txt="Update" />
+        <Button txt="Обновить профиль" />
       </form>
     );
   }

@@ -22,7 +22,7 @@ export const clearChatInfo = () => {
 export const fetchChat = roomId => async (dispatch, getState) => {
   const room = await api.getRoom(roomId);
   if (room) {
-    dispatch(setChatInfo({ title: room.name, subtitle: `${room.users.length} members` }));
+    dispatch(setChatInfo({ title: room.name, subtitle: `${room.users.length} участника` }));
   }
 };
 

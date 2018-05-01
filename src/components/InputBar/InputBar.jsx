@@ -1,17 +1,9 @@
 import React from 'react';
-import classnames from 'classnames';
 import TextareaAutosize from 'react-autosize-textarea';
-
-import submitIcon from './images/icon_submit_blue.png';
+import submitIcon from './images/icon_submit.png';
 import './styles.css';
 
 export const InputBar = ({ value, onSubmit, ...rest }) => {
-  const getIconClasses = () => {
-    return classnames('input-bar__icon', {
-      'input-bar__icon_active': !!value,
-    });
-  };
-
   const onKeyDown = e => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       if (onSubmit) {
@@ -25,7 +17,7 @@ export const InputBar = ({ value, onSubmit, ...rest }) => {
       <TextareaAutosize
         className="input-bar__input"
         type="text"
-        placeholder="Write a message..."
+        placeholder="Написать сообщение..."
         autoFocus
         autoComplete="off"
         maxRows={4}
@@ -34,7 +26,7 @@ export const InputBar = ({ value, onSubmit, ...rest }) => {
         {...rest}
       />
       <button type="submit" className="input-bar__button" onClick={onSubmit}>
-        <img className={getIconClasses()} src={submitIcon} alt="submit icon" />
+        <img className="input-bar__icon" src={submitIcon} alt="submit icon" />
       </button>
     </form>
   );
