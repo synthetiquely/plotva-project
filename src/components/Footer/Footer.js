@@ -16,7 +16,7 @@ export const Footer = ({ path }) => (
       <FooterBtn icon="footer-contacts" description={contacts} active={path === contacts} />
     </Link>
     <Link to="/profile">
-      <FooterBtn icon="footer-settings" description={settings} active={path === settings} />
+      <FooterBtn icon="footer-contact" description={settings} active={path === settings} />
     </Link>
   </div>
 );

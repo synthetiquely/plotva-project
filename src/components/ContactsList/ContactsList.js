@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Contact } from '../Contact/Contact';
 import { SectionTitle } from '../SectionTitle/SectionTitle';
+import { Error } from '../Error/Error';
+import { FETCH_CONTACTS_ERROR } from '../../errorCodes';
 import api from '../../api';
 
-import './Contacts.css';
+import './ContactsList.css';
 
-class ContactsComponent extends Component {
+class ContactsListComponent extends Component {
   constructor() {
     super();
     this.state = {
@@ -48,28 +50,29 @@ class ContactsComponent extends Component {
   };
 
   render() {
+    const { error } = this.state;
+    const { contacts, createChat, addToChat, search, user } = this.props;
     return (
       <React.Fragment>
         <SectionTitle title="Контакты" />
         <div className="contacts">
-          {this.props.contacts.map((contact, index) => {
+          {contacts.map((contact, index) => {
             const props = {};
-            if (this.props.user) {
-              props.onClick = this.props.createChat ? () => this.props.addToChat(index) : this.getChatId(contact);
+            if (user) {
+              props.onClick = createChat ? () => addToChat(index) : this.getChatId(contact);
             } else {
               props.link = `/chat/${contact._id}`;
             }
-            if (contact.userName.toLowerCase().indexOf(this.props.search) + 1 > 0) {
+            if (contact.userName.toLowerCase().indexOf(search) + 1 > 0) {
               return <Contact key={index} color={`${index}`} {...props} {...contact} />;
             }
             return null;
           })}
-          {this.state.error}
+          {error ? <Error code={FETCH_CONTACTS_ERROR} /> : null}
         </div>
       </React.Fragment>
     );
   }
 }
 
-const Contacts = withRouter(ContactsComponent);
-export { Contacts };
+export const ContactsList = withRouter(ContactsListComponent);

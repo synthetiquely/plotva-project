@@ -1,30 +1,30 @@
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { Contacts } from '../Contacts/Contacts';
+import { ContactsList } from '../ContactsList/ContactsList';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { Contact } from '../Contact/Contact';
 import { setUsers, setNext, setSelectedUsers } from '../../store/actions/userActions';
 import { NoResults } from '../NoResults/NoResults';
 import { Error } from '../Error/Error';
+import { Spinner } from '../Spinner/Spinner';
 import { FETCH_CONTACTS_ERROR } from '../../errorCodes';
 import { connect } from 'react-redux';
 
 import api from '../../../src/api.js';
 
-class UserListComponent extends PureComponent {
+class ContactsComponent extends PureComponent {
   constructor() {
     super();
     this.state = {
       error: null,
+      isLoading: false,
     };
     this.fetchNext = this.fetchNext.bind(this);
     this.addToChat = this.addToChat.bind(this);
   }
 
-  async componentDidMount() {
-    //two pages to fill the screen
-    await this.fetchNext();
-    await this.fetchNext();
+  componentDidMount() {
+    this.fetchNext();
   }
 
   componentWillUnmount() {
@@ -43,13 +43,16 @@ class UserListComponent extends PureComponent {
       return;
     }
     try {
+      this.setState({
+        isLoading: true,
+      });
       let resp = await api.getUsers(next);
       const users = this.props.users.concat(
         resp.items.map(user => {
-          const status = user.online ? 'online' : 'offline';
+          const status = user.online ? 'в сети' : 'не в сети';
           return {
             _id: user._id,
-            userName: user.name ? user.name : 'Anonymous',
+            userName: user.name ? user.name : 'Аноним',
             avatar: user.img,
             size: 'small',
             content: status,
@@ -59,9 +62,12 @@ class UserListComponent extends PureComponent {
       );
       this.props.dispatch(setUsers(users));
       this.props.dispatch(setNext(resp.next));
+      this.setState({
+        isLoading: false,
+      });
     } catch (err) {
       console.error(err);
-      this.setState({ error: err });
+      this.setState({ error: err, isLoading: false });
     }
   }
 
@@ -85,11 +91,17 @@ class UserListComponent extends PureComponent {
   }
 
   render() {
-    const { error } = this.state;
+    const { error, isLoading } = this.state;
+
     const { users, user, createChat, current } = this.props;
-    if (!users.length && !error) {
+    if (!users.length && !error && !isLoading) {
       return <NoResults text="Нет контактов..." />;
     }
+
+    if (isLoading) {
+      return <Spinner />;
+    }
+
     return (
       <React.Fragment>
         {createChat ? (
@@ -97,7 +109,7 @@ class UserListComponent extends PureComponent {
         ) : (
           <Link to="/profile">
             <Contact
-              userName={user.name}
+              userName={user.name ? user.name : 'Аноним'}
               content={user.phone}
               avatar={user.img}
               size="large"
@@ -107,7 +119,7 @@ class UserListComponent extends PureComponent {
           </Link>
         )}
         <InfiniteScroller loadMore={this.fetchNext}>
-          <Contacts
+          <ContactsList
             type="contactList"
             contacts={users}
             user={user}
@@ -130,4 +142,4 @@ const stateToProps = state => ({
   current: state.search.currentUserSearch,
 });
 
-export const UserList = connect(stateToProps)(UserListComponent);
+export const Contacts = connect(stateToProps)(ContactsComponent);

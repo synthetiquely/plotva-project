@@ -45,10 +45,10 @@
   background-image: url(./img/contacts.svg);
 }
 
-.icon_footer-settings {
+.icon_footer-contact {
   width: 26px;
   height: 26px;
-  background-image: url(./img/settings.svg);
+  background-image: url(./img/contact.svg);
 }
 
 .icon_header-back {
