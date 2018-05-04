@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-
+const bcryptjs = require('bcryptjs');
 const { getSessionInfo, saveSessionInfo } = require('./session');
 const { pageableCollection, insertOrUpdateEntity } = require('./helpers');
 
@@ -11,6 +11,7 @@ const TABLE = 'users';
  *  name: string,
  *  email: string,
  *  phone: string,
+ *  password: string,
  *  [status]: boolean
  * }} User
  */
@@ -25,13 +26,11 @@ async function findUserBySid(db, sid, user) {
   let session = await getSessionInfo(db, sid);
 
   if (!session.userId) {
-    // Create fake user
-
     let user = {
       name: '',
       email: '',
       phone: '',
-      isFirstLogin: true,
+      password: '',
     };
 
     user = await saveUser(db, user);
@@ -53,7 +52,23 @@ async function findUserBySid(db, sid, user) {
  * @returns {Promise<User>}
  */
 async function getUser(db, userId) {
-  return db.collection(TABLE).findOne({ _id: ObjectId(userId.toString()) });
+  console.log(userId);
+  return db.collection(TABLE).findOne(
+    {
+      _id: ObjectId(userId.toString()),
+    },
+    { password: 0 },
+  );
+}
+
+/**
+ * @param {Db} db
+ * @param {string} email
+ *
+ * @returns {Promise<User>}
+ */
+async function getUserByEmail(db, email) {
+  return db.collection(TABLE).findOne({ email });
 }
 
 /**
@@ -64,9 +79,13 @@ async function getUser(db, userId) {
  */
 async function saveUser(db, user) {
   if (user._id) {
-    user.isFirstLogin = false;
     user._id = ObjectId(user._id.toString());
   }
+
+  if (user.password) {
+    user.password = generatePasswordHash(user.password);
+  }
+
   return insertOrUpdateEntity(db.collection(TABLE), user);
 }
 
@@ -80,9 +99,20 @@ async function getUsers(db, filter) {
   return pageableCollection(db.collection(TABLE), filter);
 }
 
+function validatePassword(password, user) {
+  return bcryptjs.compareSync(password, user.password);
+}
+
+function generatePasswordHash(password) {
+  return bcryptjs.hashSync(password, 10);
+}
+
 module.exports = {
   findUserBySid,
   getUsers,
   getUser,
+  getUserByEmail,
   saveUser,
+  generatePasswordHash,
+  validatePassword,
 };

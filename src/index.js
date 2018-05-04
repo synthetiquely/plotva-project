@@ -4,32 +4,22 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import { setUser } from './store/actions/userActions';
 
 import { App } from './components/App/App';
-import api from './api';
 
 import { registerSocketEventListeners } from './registerSocketEventListeners';
 import regSw from './reg-sw';
 
 import './index.css';
 
-(async () => {
-  const user = await api.getCurrentUser();
+registerSocketEventListeners(store);
 
-  if (user) {
-    store.dispatch(setUser(user));
-  }
-
-  registerSocketEventListeners(store);
-
-  ReactDOM.render(
-    <BrowserRouter>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </BrowserRouter>,
-    document.getElementById('root'),
-  );
-  regSw();
-})();
+ReactDOM.render(
+  <BrowserRouter>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </BrowserRouter>,
+  document.getElementById('root'),
+);
+regSw();

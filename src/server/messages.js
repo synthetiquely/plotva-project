@@ -10,6 +10,11 @@ module.exports = {
   USERS: 'USERS',
 
   /**
+   * Sign in
+   */
+  SIGNIN: 'SIGNIN',
+
+  /**
    * Save user
    */
   USER_SAVE: 'USER_SAVE',

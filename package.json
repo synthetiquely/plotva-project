@@ -6,6 +6,7 @@
   "homepage": "https://synthetiquely.github.io/plotva-project/",
   "dependencies": {
     "babel-core": "^6.26.0",
+    "bcryptjs": "^2.4.3",
     "classnames": "^2.2.5",
     "concurrently": "^3.5.1",
     "cookie-parser": "^1.4.3",
@@ -13,8 +14,8 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "faker": "^4.1.0",
-    "jest-fetch-mock": "^1.5.0",
     "gh-pages": "^1.1.0",
+    "jest-fetch-mock": "^1.5.0",
     "mongod": "^2.0.0",
     "mongodb": "^3.0.5",
     "nodemon": "^1.15.1",

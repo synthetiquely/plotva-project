@@ -67,6 +67,15 @@ class Api {
   }
 
   /**
+   * Sign ins user
+   *
+   * @return {Promise<User>}
+   */
+  async signin(user) {
+    return this._requestResponse(MESSAGES.SIGNIN, user);
+  }
+
+  /**
    * Return all known users
    *
    * @param {{ [limit]: number, [_id]: string }} [filter] - you can pass next object here
