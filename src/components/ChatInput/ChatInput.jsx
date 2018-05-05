@@ -1,30 +1,45 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Icon } from '../Icon/Icon';
+import { setNewRoomName } from '../../store/actions/roomsActions';
 import './ChatInput.css';
-import { setChatName } from '../../store/actions/chatActions';
 
-const stateToProps = state => ({});
+export class ChatInputComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      chatName: '',
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
 
-export const ChatInput = connect(stateToProps)(
-  class ChatInput extends React.Component {
-    constructor(props) {
-      super(props);
-      this.getNewChatName = this.getNewChatName.bind(this);
-    }
+  handleChange(event) {
+    this.setState({
+      chatName: event.target.value,
+    });
+  }
 
-    getNewChatName(event) {
-      this.props.dispatch(setChatName(event.target.value));
-    }
+  handleSubmit(event) {
+    event.preventDefault();
+    this.props.setNewRoomName(this.state.chatName);
+  }
 
-    render() {
-      return (
+  render() {
+    const { chatName } = this.state;
+    return (
+      <form onSubmit={this.handleSubmit} className="search-input">
+        <Icon className="search-input__icon" type="header-add" />
         <input
           className="search"
-          type="search"
-          placeholder="Enter new qnique chat name."
-          onChange={this.getNewChatName}
+          type="text"
+          value={chatName}
+          placeholder="Придумайте уникальное имя для чата"
+          onChange={this.handleChange}
         />
-      );
-    }
-  },
-);
+      </form>
+    );
+  }
+}
+
+export const ChatInput = connect(null, { setNewRoomName })(ChatInputComponent);

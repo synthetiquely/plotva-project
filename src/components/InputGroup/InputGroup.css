@@ -1,6 +1,7 @@
 .input-wrapper {
   display: block;
   margin-bottom: 20px;
+  font-weight: 500;
 }
 
 .input-wrapper__input {
@@ -20,7 +21,7 @@
 }
 
 .input-wrapper_file {
-  color: #ffdb4d;
+  color: #8ed9b2;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -28,6 +29,6 @@
 
 .input-wrapper__input:focus,
 .input-wrapper__input:active {
-  border: 1px solid #ffdb4d;
-  outline: 1px solid #ffdb4d;
+  border: 1px solid #8ed9b2;
+  outline: 1px solid #8ed9b2;
 }

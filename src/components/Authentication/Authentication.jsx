@@ -29,6 +29,8 @@ export class AuthenticationComponent extends Component {
   toggleForm() {
     this.setState(prevState => ({
       showSignin: !prevState.showSignin,
+      isLoading: false,
+      error: null,
     }));
   }
 
@@ -37,21 +39,21 @@ export class AuthenticationComponent extends Component {
       isLoading: true,
     });
 
-    api
-      .signin(signinData)
-      .then(user => {
-        this.props.setUser(user);
+    api.signin(signinData).then(response => {
+      console.log('Response', response);
+      if (response.isError) {
+        this.setState({
+          error: response.errorMessage,
+          isLoading: false,
+        });
+      } else {
+        this.props.setUser(response);
         this.setState({
           isLoading: false,
         });
         this.props.history.push('/chats');
-      })
-      .catch(error => {
-        this.setState({
-          error,
-          isLoading: false,
-        });
-      });
+      }
+    });
   }
 
   handleSignup(signupData) {
@@ -59,21 +61,21 @@ export class AuthenticationComponent extends Component {
       isLoading: true,
     });
 
-    api
-      .saveUser(signupData)
-      .then(user => {
-        this.props.setUser(user);
+    api.saveUser(signupData).then(response => {
+      console.log('Response', response);
+      if (response.isError) {
+        this.setState({
+          error: response.errorMessage,
+          isLoading: false,
+        });
+      } else {
+        this.props.setUser(response);
         this.setState({
           isLoading: false,
         });
         this.props.history.push('/chats');
-      })
-      .catch(error => {
-        this.setState({
-          error,
-          isLoading: false,
-        });
-      });
+      }
+    });
   }
 
   render() {

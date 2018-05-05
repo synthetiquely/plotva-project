@@ -31,10 +31,18 @@ export class SignupForm extends Component {
     const { name, email, phone, password } = this.state;
     return (
       <form onSubmit={this.handleSubmit} className="profile-edit">
-        <InputGroup type="text" name="name" onInputChange={this.handleChange} value={name} label="Введите ваше имя" />
+        <InputGroup
+          type="text"
+          name="name"
+          placeholder="Введите ваше имя"
+          onInputChange={this.handleChange}
+          value={name}
+          label="Введите ваше имя"
+        />
         <InputGroup
           type="email"
           name="email"
+          placeholder="Введите ваш email"
           onInputChange={this.handleChange}
           value={email}
           label="Введите ваш почтовый ящик"
@@ -42,6 +50,7 @@ export class SignupForm extends Component {
         <InputGroup
           type="tel"
           name="phone"
+          placeholder="Введите ваш номер телефона"
           onInputChange={this.handleChange}
           value={phone}
           label="Введите ваш номер телефона"
@@ -49,6 +58,7 @@ export class SignupForm extends Component {
         <InputGroup
           type="password"
           name="password"
+          placeholder="Придумайте пароль"
           onInputChange={this.handleChange}
           value={password}
           label="Придумайте пароль"

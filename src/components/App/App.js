@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
+import PrivateRoute from '../PrivateRoute/PrivateRoute';
 import { AuthenticationPage } from '../AuthenticationPage/AuthenticationPage';
 import { ChatsPage } from '../ChatsPage/ChatsPage';
 import { ConversationPage } from '../ConversationPage/ConversationPage';
@@ -12,11 +13,11 @@ export class App extends Component {
     return (
       <Switch>
         <Route exact path="/" component={AuthenticationPage} />
-        <Route exact path="/profile" component={ProfilePage} />
-        <Route exact path="/chats" component={ChatsPage} />
-        <Route exact path="/chat/:id" component={ConversationPage} />
-        <Route exact path="/contacts" component={ContactsPage} />
-        <Route exact path="/create_chat" component={CreateGroupChatPage} />
+        <Route exact path="/profile" component={PrivateRoute(ProfilePage)} />
+        <Route exact path="/chats" component={PrivateRoute(ChatsPage)} />
+        <Route exact path="/chat/:id" component={PrivateRoute(ConversationPage)} />
+        <Route exact path="/contacts" component={PrivateRoute(ContactsPage)} />
+        <Route exact path="/create_chat" component={PrivateRoute(CreateGroupChatPage)} />
       </Switch>
     );
   }

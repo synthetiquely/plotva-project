@@ -1,4 +1,4 @@
-const { findUserBySid, getUserByEmail, getUser, getUsers, saveUser, validatePassword } = require('./database/user');
+const { findUserBySid, getUserByEmail, getUser, getUsers, updateUser, validatePassword } = require('./database/user');
 const { joinRoom, leaveRoom, getRooms, getUserRooms, createRoom } = require('./database/room');
 const { getMessages, sendMessage } = require('./database/messages');
 const TYPES = require('./messages');
@@ -139,7 +139,7 @@ module.exports = function(db, io) {
 
     // Save user
     requestResponse(TYPES.USER_SAVE, async params => {
-      return await saveUser(db, params);
+      return await updateUser(sid, db, params);
     });
 
     // Sign in user
@@ -151,11 +151,17 @@ module.exports = function(db, io) {
 
         if (isValid) {
           delete user.password;
+          userPromise = getUser(db, user._id).catch(error => {
+            throw new Error(`Cannot load user: ${error}`);
+          });
+
           return user;
         }
       }
-
-      throw new Error('Invalid email or password');
+      return {
+        isError: true,
+        errorMessage: 'Неверный email или пароль.',
+      };
     });
 
     // Create room
@@ -173,8 +179,6 @@ module.exports = function(db, io) {
     // Rooms of current user
     requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
       let currentUser = await userPromise;
-      console.log('Current user', currentUser);
-
       return getUserRooms(db, currentUser._id, params);
     });
 

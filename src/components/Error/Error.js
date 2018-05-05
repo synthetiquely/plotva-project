@@ -6,7 +6,7 @@ import './styles.css';
 const generateErrorMessage = code => {
   switch (code) {
     case errorCodes.AUTHENTICATION_ERROR:
-      return 'An authentication error has occured. Try to reload the page.';
+      return 'Не можем войти с такими учетными данными. Попробуйте другое имя или пароль.';
     case errorCodes.FETCH_CONTACTS_ERROR:
       return 'An API error has occured while trying to get contacts. Try to reload the page.';
     case errorCodes.FETCH_ROOMS_ERROR:

@@ -1,9 +1,17 @@
 .btn {
   min-width: 120px;
-  background-color: #ffdb4d;
+  background-color: #8ed9b2;
   font-size: 1.1rem;
   color: #000;
   padding: 10px 15px;
   border: none;
   border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:active,
+.btn:focus {
+  background-color: #a2f7cb;
+  outline-color: #8ed9b2;
 }

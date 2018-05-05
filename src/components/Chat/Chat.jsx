@@ -4,11 +4,9 @@ import { connect } from 'react-redux';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { MessagesList } from '../MessagesList/MessagesList';
 import { fetchMessages } from '../../store/actions/messagesActions';
-import { fetchChat, clearChat } from '../../store/actions/chatActions';
 import { Error } from '../Error/Error';
 import { NoResults } from '../NoResults/NoResults';
 import { FETCH_MESSAGES_ERROR } from '../../errorCodes';
-import api from '../../api';
 
 class ChatComponent extends PureComponent {
   constructor() {
@@ -20,23 +18,7 @@ class ChatComponent extends PureComponent {
   }
 
   componentDidMount() {
-    this.joinRoom();
     this.fetchNext();
-    this.props.fetchChat(this.props.match.params.id);
-  }
-
-  componentWillUnmount() {
-    this.props.clearChat();
-  }
-
-  async joinRoom() {
-    try {
-      await api.currentUserJoinRoom(this.props.match.params.id);
-    } catch (error) {
-      this.setState({
-        error,
-      });
-    }
   }
 
   async fetchNext() {
@@ -71,4 +53,4 @@ const stateToProps = state => ({
   messages: state.messages,
 });
 
-export const Chat = withRouter(connect(stateToProps, { fetchMessages, fetchChat, clearChat })(ChatComponent));
+export const Chat = withRouter(connect(stateToProps, { fetchMessages })(ChatComponent));

@@ -3,7 +3,7 @@ import { Icon } from '../Icon/Icon';
 
 import './InputGroup.css';
 
-export const InputGroup = ({ name, label, type, value, onInputChange }) => (
+export const InputGroup = ({ name, label, type, value, placeholder, onInputChange }) => (
   <label className={`input-wrapper input-wrapper_${type}`}>
     {type === 'file' ? <Icon type="file" /> : null} {label}
     <input
@@ -11,6 +11,7 @@ export const InputGroup = ({ name, label, type, value, onInputChange }) => (
       onChange={onInputChange}
       type={type}
       name={name}
+      placeholder={placeholder}
       defaultValue={value}
     />
   </label>

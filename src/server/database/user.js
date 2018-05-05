@@ -22,9 +22,8 @@ const TABLE = 'users';
  *
  * @returns {Promise<User>}
  */
-async function findUserBySid(db, sid, user) {
+async function findUserBySid(db, sid) {
   let session = await getSessionInfo(db, sid);
-
   if (!session.userId) {
     let user = {
       name: '',
@@ -32,13 +31,9 @@ async function findUserBySid(db, sid, user) {
       phone: '',
       password: '',
     };
-
     user = await saveUser(db, user);
-
     session.userId = user._id;
-
     await saveSessionInfo(db, session);
-
     return user;
   } else {
     return db.collection(TABLE).findOne({ _id: session.userId });
@@ -52,7 +47,6 @@ async function findUserBySid(db, sid, user) {
  * @returns {Promise<User>}
  */
 async function getUser(db, userId) {
-  console.log(userId);
   return db.collection(TABLE).findOne(
     {
       _id: ObjectId(userId.toString()),
@@ -82,10 +76,25 @@ async function saveUser(db, user) {
     user._id = ObjectId(user._id.toString());
   }
 
+  return insertOrUpdateEntity(db.collection(TABLE), user);
+}
+
+/**
+ * @param {string} sid
+ * @param {Db} db
+ * @param {User} user
+ *
+ * @returns {Promise<User>}
+ */
+async function updateUser(sid, db, userData) {
+  let user = await findUserBySid(db, sid);
+  user = {
+    ...user,
+    ...userData,
+  };
   if (user.password) {
     user.password = generatePasswordHash(user.password);
   }
-
   return insertOrUpdateEntity(db.collection(TABLE), user);
 }
 
@@ -113,6 +122,7 @@ module.exports = {
   getUser,
   getUserByEmail,
   saveUser,
+  updateUser,
   generatePasswordHash,
   validatePassword,
 };

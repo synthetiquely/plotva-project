@@ -8,6 +8,5 @@ export const MESSAGES_APPENDED = 'MESSAGES_APPENDED';
 
 export const SET_SEARCH = 'SET_SEARCH';
 
-export const SET_CHAT_NAME = 'SET_CHAT_NAME';
-export const SET_CHAT_INFO = 'SET_CHAT_INFO';
-export const CLEAR_CHAT_INFO = 'CLEAR_CHAT_INFO';
+export const ROOMS_SET = 'ROOMS_SET';
+export const NEW_ROOM_NAME_SET = 'NEW_ROOM_NAME_SET';

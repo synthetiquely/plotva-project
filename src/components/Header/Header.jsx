@@ -8,6 +8,7 @@ import { Avatar } from '../Avatar/Avatar';
 import './Header.css';
 import api from '../../api';
 import { setSelectedUsers, setUsers } from '../../store/actions/userActions';
+import { setNewRoomName } from '../../store/actions/roomsActions';
 
 import { connect } from 'react-redux';
 
@@ -15,10 +16,10 @@ class HeaderComponent extends Component {
   newChat = async () => {
     const { user, selectedUsers } = this.props;
     try {
-      const rooms = await api.getRooms({ name: this.props.chatName });
+      const rooms = await api.getRooms({ name: this.props.newRoomChatName });
       if (!rooms.count) {
         selectedUsers.push(user);
-        await this.createRoomWithUsers(this.props.chatName, selectedUsers);
+        await this.createRoomWithUsers(this.props.newRoomChatName, selectedUsers);
 
         const users = [].concat(this.props.users);
         users.forEach(user => {
@@ -26,6 +27,7 @@ class HeaderComponent extends Component {
         });
         this.props.dispatch(setUsers(users));
         this.props.dispatch(setSelectedUsers([]));
+        this.props.dispatch(setNewRoomName(''));
       }
     } catch (err) {
       this.setState({ error: 'Произошла ошибка.' });
@@ -94,7 +96,7 @@ class HeaderComponent extends Component {
 
 const stateToProps = state => ({
   selectedUsers: state.user.selectedUsers,
-  chatName: state.chatName.currentChatName,
+  newRoomChatName: state.rooms.newRoomName,
   user: state.user.user,
   users: state.user.users,
 });

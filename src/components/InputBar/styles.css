@@ -20,8 +20,8 @@
 
 .input-bar__input:focus,
 .input-bar__input:active {
-  border: 1px solid #fab81e;
-  outline: 1px solid #fab81e;
+  border: 1px solid #8ed9b2;
+  outline: 1px solid #8ed9b2;
 }
 
 .input-bar__button {
@@ -40,5 +40,5 @@
 
 .input-bar__icon_active {
   filter: grayscale(0%);
-  color: #fab81e;
+  color: #8ed9b2;
 }

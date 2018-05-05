@@ -29,10 +29,18 @@ export class SigninForm extends Component {
     const { email, password } = this.state;
     return (
       <form onSubmit={this.handleSubmit} className="profile-edit">
-        <InputGroup type="text" name="email" onInputChange={this.handleChange} value={email} label="Ваше имя" />
+        <InputGroup
+          type="text"
+          name="email"
+          placeholder="Введите ваш email"
+          onInputChange={this.handleChange}
+          value={email}
+          label="Ваш email"
+        />
         <InputGroup
           type="password"
           name="password"
+          placeholder="Введите ваш пароль"
           onInputChange={this.handleChange}
           value={password}
           label="Ваш пароль"
