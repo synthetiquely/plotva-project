@@ -31,6 +31,12 @@ const SERVER_CONFIG = {
   port: SERVER_PORT,
 };
 
-createServer(SERVER_CONFIG, DATABASE_CONFIG).catch(err => {
+const CLOUDINARY_CONFIG = {
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+};
+
+createServer(SERVER_CONFIG, DATABASE_CONFIG, CLOUDINARY_CONFIG).catch(err => {
   console.log(err);
 });

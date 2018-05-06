@@ -1,48 +1,44 @@
 const express = require('express');
-const app = express();
-const http = require('http').Server(app);
 const attachIO = require('socket.io');
+const bodyParser = require('body-parser');
 const cookieParser = require('socket.io-cookie-parser');
 const cookie = require('cookie-parser');
-const uuid = require('uuid/v4');
+const cloudinary = require('cloudinary');
 const { createReadStream, stat } = require('fs');
+
+const app = express();
+const http = require('http').Server(app);
 require('dotenv').config();
 
 const { connect } = require('./database');
-const attachController = require('./controller');
 
-/**
- * @param {{}} serverConfig
- * @param {string} serverConfig.host Server host
- * @param {number} serverConfig.port Server port
- *
- * @param {MongoConfig} databaseConfig
- *
- * @return {Promise<void>}
- */
-exports.createServer = function(serverConfig, databaseConfig) {
+const chatController = require('./controllers/chatController');
+const authRouter = require('./routes/auth');
+
+let database;
+
+const createServer = function(serverConfig, databaseConfig, apiProvider) {
   return connect(databaseConfig).then(db => {
     return new Promise(resolve => {
+      database = db;
       app.use(express.static('build'));
       app.use(cookie());
+      app.use(bodyParser.urlencoded({ extended: false }));
+      app.use(bodyParser.json());
 
-      app.get('/api/auth', function(req, res) {
-        if (!req.cookies.sid) {
-          res.cookie('sid', uuid(), {
-            httpOnly: true,
-            path: '/',
-            maxAge: 24 * 7 * 3600000, // 1 week
-          });
-        }
-
-        res.json({});
+      //Cloudinary API Config
+      cloudinary.config({
+        cloud_name: apiProvider.cloud_name,
+        api_key: apiProvider.api_key,
+        api_secret: apiProvider.api_secret,
       });
 
-      let io = attachIO(http);
+      app.use('/api/auth', authRouter);
 
+      let io = attachIO(http);
       io.use(cookieParser());
 
-      attachController(db, io);
+      chatController(db, io);
 
       app.use((req, res, next) => {
         let index = 'build/index.html';
@@ -57,9 +53,13 @@ exports.createServer = function(serverConfig, databaseConfig) {
 
       http.listen(serverConfig.port, function() {
         console.log(`API server is listening at http://${serverConfig.host}:${serverConfig.port}`);
-
         resolve();
       });
     });
   });
+};
+
+module.exports = {
+  createServer,
+  database,
 };

@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const bcryptjs = require('bcryptjs');
-const { getSessionInfo, saveSessionInfo } = require('./session');
+const { decodeToken } = require('../utils/jwt');
 const { pageableCollection, insertOrUpdateEntity } = require('./helpers');
 
 const TABLE = 'users';
@@ -15,30 +15,6 @@ const TABLE = 'users';
  *  [status]: boolean
  * }} User
  */
-
-/**
- * @param {Db} db
- * @param {string} sid Session ID
- *
- * @returns {Promise<User>}
- */
-async function findUserBySid(db, sid) {
-  let session = await getSessionInfo(db, sid);
-  if (!session.userId) {
-    let user = {
-      name: '',
-      email: '',
-      phone: '',
-      password: '',
-    };
-    user = await saveUser(db, user);
-    session.userId = user._id;
-    await saveSessionInfo(db, session);
-    return user;
-  } else {
-    return db.collection(TABLE).findOne({ _id: session.userId });
-  }
-}
 
 /**
  * @param {Db} db
@@ -86,16 +62,17 @@ async function saveUser(db, user) {
  *
  * @returns {Promise<User>}
  */
-async function updateUser(sid, db, userData) {
-  let user = await findUserBySid(db, sid);
-  user = {
-    ...user,
-    ...userData,
-  };
-  if (user.password) {
-    user.password = generatePasswordHash(user.password);
+async function createUser(db, userData) {
+  if (userData.password) {
+    userData.password = generatePasswordHash(userData.password);
   }
-  return insertOrUpdateEntity(db.collection(TABLE), user);
+  return insertOrUpdateEntity(db.collection(TABLE), userData);
+}
+
+async function findUserByToken(db, token) {
+  const decoded = decodeToken(token);
+
+  return db.collection(TABLE).findOne({ _id: decoded._id });
 }
 
 /**
@@ -117,12 +94,12 @@ function generatePasswordHash(password) {
 }
 
 module.exports = {
-  findUserBySid,
+  findUserByToken,
   getUsers,
   getUser,
   getUserByEmail,
   saveUser,
-  updateUser,
+  createUser,
   generatePasswordHash,
   validatePassword,
 };
