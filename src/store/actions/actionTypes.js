@@ -1,6 +1,5 @@
 export const SET_USER = 'SET_USER';
 export const SET_USERS = 'SET_USERS';
-export const SET_NEXT = 'SET_NEXT';
 export const SET_SELECTED = 'SET_SELECTED';
 
 export const MESSAGES_SET = 'MESSAGES_SET';

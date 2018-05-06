@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { database } = require('../server');
 const { getUserByEmail } = require('../database/user');
 
 const authenticateUser = async (req, res, next) => {
@@ -14,7 +13,7 @@ const authenticateUser = async (req, res, next) => {
     try {
       const decoded = await jwt.verify(token, String(process.env.JWT_SECRET));
       if (decoded !== null) {
-        const user = await getUserByEmail(database, decoded.email);
+        const user = await getUserByEmail(req.db, decoded.email);
         if (user) {
           next();
         } else {

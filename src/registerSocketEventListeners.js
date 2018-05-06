@@ -1,5 +1,6 @@
 import api from './api';
 import { appendMessages } from './store/actions/messagesActions';
+import { changeOnlineStatusInRooms } from './store/actions/roomsActions';
 
 export const registerSocketEventListeners = async store => {
   await api.onMessage(result => {
@@ -27,5 +28,13 @@ export const registerSocketEventListeners = async store => {
         messages: message,
       }),
     );
+  });
+
+  await api.onUserJoinedRoom(result => {
+    console.log('Result', result);
+  });
+
+  await api.onUserChangeStatus(result => {
+    store.dispatch(changeOnlineStatusInRooms(result.userId, result.status));
   });
 };

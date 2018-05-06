@@ -39,3 +39,24 @@ export const fetchRooms = () => async (dispatch, getState) => {
   );
   dispatch(setRooms({ rooms, next }));
 };
+
+export const changeOnlineStatusInRooms = (userId, status) => (dispatch, getState) => {
+  const rooms = getState().rooms.rooms;
+  const next = getState().rooms.next;
+
+  if (rooms.length) {
+    const transformedRooms = rooms.map(room => {
+      if (room.users && room.users.length === 2) {
+        if (room.users.find(id => id === userId)) {
+          return {
+            ...room,
+            status: status ? 'в сети' : 'не в сети',
+          };
+        }
+      } else {
+        return room;
+      }
+    });
+    dispatch(setRooms({ rooms: transformedRooms, next }));
+  }
+};

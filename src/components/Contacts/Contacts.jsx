@@ -3,14 +3,12 @@ import { Link } from 'react-router-dom';
 import { ContactsList } from '../ContactsList/ContactsList';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { Contact } from '../Contact/Contact';
-import { setUsers, setNext, setSelectedUsers } from '../../store/actions/userActions';
+import { fetchUsers, setUsers, setSelectedUsers } from '../../store/actions/userActions';
 import { NoResults } from '../NoResults/NoResults';
 import { Error } from '../Error/Error';
 import { Spinner } from '../Spinner/Spinner';
 import { FETCH_CONTACTS_ERROR } from '../../errorCodes';
 import { connect } from 'react-redux';
-
-import api from '../../../src/api.js';
 
 class ContactsComponent extends PureComponent {
   constructor() {
@@ -33,35 +31,16 @@ class ContactsComponent extends PureComponent {
       user.checked = false;
     });
 
-    this.props.dispatch(setUsers(users));
-    this.props.dispatch(setSelectedUsers([]));
+    this.props.setUsers(users);
+    this.props.setSelectedUsers([]);
   }
 
   async fetchNext() {
-    const next = this.props.next;
-    if (next === null) {
-      return;
-    }
     try {
       this.setState({
         isLoading: true,
       });
-      let resp = await api.getUsers(next);
-      const users = this.props.users.concat(
-        resp.items.map(user => {
-          const status = user.online ? 'в сети' : 'не в сети';
-          return {
-            _id: user._id,
-            userName: user.name ? user.name : 'Аноним',
-            avatar: user.img,
-            size: 'small',
-            content: status,
-            contentType: status,
-          };
-        }),
-      );
-      this.props.dispatch(setUsers(users));
-      this.props.dispatch(setNext(resp.next));
+      await this.props.fetchUsers();
       this.setState({
         isLoading: false,
       });
@@ -78,16 +57,16 @@ class ContactsComponent extends PureComponent {
 
     if (!current.checked) {
       selectedUsers.push(current);
-      this.props.dispatch(setSelectedUsers(selectedUsers));
+      this.props.setSelectedUsers(selectedUsers);
     } else {
       let user = selectedUsers.find(user => user._id === current._id);
       let deleteIndex = selectedUsers.indexOf(user);
       selectedUsers.splice(deleteIndex, 1);
-      this.props.dispatch(setSelectedUsers(selectedUsers));
+      this.props.setSelectedUsers(selectedUsers);
     }
 
     current.checked = !current.checked;
-    this.props.dispatch(setUsers(users));
+    this.props.setUsers(users);
   }
 
   render() {
@@ -137,9 +116,8 @@ class ContactsComponent extends PureComponent {
 const stateToProps = state => ({
   user: state.user.user,
   users: state.user.users,
-  next: state.user.next,
   selectedUsers: state.user.selectedUsers,
   current: state.search.currentUserSearch,
 });
 
-export const Contacts = connect(stateToProps)(ContactsComponent);
+export const Contacts = connect(stateToProps, { fetchUsers, setUsers, setSelectedUsers })(ContactsComponent);

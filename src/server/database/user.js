@@ -31,6 +31,16 @@ async function getUser(db, userId) {
   );
 }
 
+async function findUserByToken(db, token) {
+  const decoded = decodeToken(token);
+  return db.collection(TABLE).findOne(
+    {
+      _id: ObjectId(decoded._id.toString()),
+    },
+    { password: 0 },
+  );
+}
+
 /**
  * @param {Db} db
  * @param {string} email
@@ -67,12 +77,6 @@ async function createUser(db, userData) {
     userData.password = generatePasswordHash(userData.password);
   }
   return insertOrUpdateEntity(db.collection(TABLE), userData);
-}
-
-async function findUserByToken(db, token) {
-  const decoded = decodeToken(token);
-
-  return db.collection(TABLE).findOne({ _id: decoded._id });
 }
 
 /**

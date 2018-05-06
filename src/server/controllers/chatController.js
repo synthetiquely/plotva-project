@@ -21,9 +21,9 @@ module.exports = function(db, io) {
     return users;
   }
 
-  async function identifyUserByToken(token) {
+  async function identifyUserByToken(db, token) {
     if (token) {
-      return findUserByToken(db, token);
+      return await findUserByToken(db, token);
     } else {
       return null;
     }
@@ -32,32 +32,26 @@ module.exports = function(db, io) {
   /**
    * Connection is created
    */
-  io.on('connection', function(socket) {
+  io.on('connection', async function(socket) {
     let { token } = socket.request.cookies;
     let isDisconnected = false;
+    let currentUser;
 
     socket.join('broadcast');
 
-    let userPromise = new Promise(resolve => resolve(null));
     if (token) {
       // Load user information for next usage
-      userPromise = identifyUserByToken(db, token).catch(error => {
+      currentUser = await identifyUserByToken(db, token).catch(error => {
         throw new Error(`Cannot load user: ${error}`);
       });
-
-      userPromise.then(async user => {
-        if (!isDisconnected) {
-          ONLINE[user._id] = true;
-        }
-
-        userChangeOnlineStatus(user._id);
-
-        // Get of user groups
-        let rooms = await getUserRooms(db, user._id);
-
-        rooms.items.forEach(room => {
-          joinToRoomChannel(db, room._id);
-        });
+      if (!isDisconnected) {
+        ONLINE[currentUser._id] = true;
+      }
+      userChangeOnlineStatus(currentUser._id);
+      // Get of user groups
+      let rooms = await getUserRooms(db, currentUser._id);
+      rooms.items.forEach(room => {
+        joinToRoomChannel(db, room._id);
       });
     }
 
@@ -156,7 +150,7 @@ module.exports = function(db, io) {
     }
 
     // Receive current user information
-    requestResponse(TYPES.CURRENT_USER, () => userPromise);
+    requestResponse(TYPES.CURRENT_USER, () => currentUser);
 
     // Return list of all users with
     requestResponse(TYPES.USERS, async params => {
@@ -165,8 +159,6 @@ module.exports = function(db, io) {
 
     // Create room
     requestResponse(TYPES.CREATE_ROOM, async params => {
-      let currentUser = await userPromise;
-
       return createRoom(db, currentUser, params);
     });
 
@@ -177,14 +169,11 @@ module.exports = function(db, io) {
 
     // Rooms of current user
     requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
-      let currentUser = await userPromise;
       return getUserRooms(db, currentUser._id, params);
     });
 
     // Join current user to room
     requestResponse(TYPES.CURRENT_USER_JOIN_ROOM, async ({ roomId }) => {
-      let currentUser = await userPromise;
-
       let payload = {
         roomId,
         userId: currentUser._id,
@@ -206,8 +195,6 @@ module.exports = function(db, io) {
 
     // Leave current user to room
     requestResponse(TYPES.CURRENT_USER_LEAVE_ROOM, async ({ roomId }) => {
-      let currentUser = await userPromise;
-
       let payload = {
         roomId,
         userId: currentUser._id,
@@ -221,8 +208,6 @@ module.exports = function(db, io) {
 
     // Send message
     requestResponse(TYPES.SEND_MESSAGE, async payload => {
-      let currentUser = await userPromise;
-
       let message = await sendMessage(db, {
         ...payload,
         userId: currentUser._id,
@@ -238,12 +223,10 @@ module.exports = function(db, io) {
 
     socket.on('disconnect', async () => {
       isDisconnected = true;
-      let user = await userPromise;
+      if (currentUser) {
+        ONLINE[currentUser._id] = false;
 
-      if (user) {
-        ONLINE[user._id] = false;
-
-        userChangeOnlineStatus(user._id);
+        userChangeOnlineStatus(currentUser._id);
       }
     });
   });

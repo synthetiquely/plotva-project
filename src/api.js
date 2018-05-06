@@ -1,4 +1,6 @@
 import io from 'socket.io-client';
+import { store } from './store/store';
+import { decodeTokenAndSetUser } from './store/actions/userActions';
 import * as MESSAGES from './server/messages';
 
 class Api {
@@ -6,7 +8,13 @@ class Api {
     this.uniqueId = 0;
 
     this._connectPromise = fetch('/api/auth', { credentials: 'same-origin' })
-      .then(() => this._setupSocket())
+      .then(response => response.json())
+      .then(res => {
+        if (res.token) {
+          store.dispatch(decodeTokenAndSetUser(res.token));
+        }
+        return this._setupSocket();
+      })
       .catch(err => {
         console.error('Auth problems: ' + err.message);
 
@@ -55,24 +63,6 @@ class Api {
    */
   async getCurrentUser() {
     return this._requestResponse(MESSAGES.CURRENT_USER);
-  }
-
-  /**
-   * Save given yser into DB
-   *
-   * @return {Promise<User>}
-   */
-  async saveUser(user) {
-    return this._requestResponse(MESSAGES.USER_SAVE, user);
-  }
-
-  /**
-   * Sign ins user
-   *
-   * @return {Promise<User>}
-   */
-  async signin(user) {
-    return this._requestResponse(MESSAGES.SIGNIN, user);
   }
 
   /**

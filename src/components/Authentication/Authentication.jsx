@@ -8,8 +8,8 @@ import { Error } from '../Error/Error';
 import { AUTHENTICATION_ERROR } from '../../errorCodes';
 
 import { connect } from 'react-redux';
-import { setUser } from '../../store/actions/userActions';
-import api from '../../api';
+import { decodeTokenAndSetUser } from '../../store/actions/userActions';
+import { signin, signup } from '../../api/auth';
 
 import './styles.css';
 
@@ -39,21 +39,20 @@ export class AuthenticationComponent extends Component {
       isLoading: true,
     });
 
-    api.signin(signinData).then(response => {
-      console.log('Response', response);
-      if (response.isError) {
-        this.setState({
-          error: response.errorMessage,
-          isLoading: false,
-        });
-      } else {
-        this.props.setUser(response);
+    signin(signinData)
+      .then(response => {
+        this.props.decodeTokenAndSetUser(response.token);
         this.setState({
           isLoading: false,
         });
         this.props.history.push('/chats');
-      }
-    });
+      })
+      .catch(error => {
+        this.setState({
+          error,
+          isLoading: false,
+        });
+      });
   }
 
   handleSignup(signupData) {
@@ -61,21 +60,20 @@ export class AuthenticationComponent extends Component {
       isLoading: true,
     });
 
-    api.saveUser(signupData).then(response => {
-      console.log('Response', response);
-      if (response.isError) {
-        this.setState({
-          error: response.errorMessage,
-          isLoading: false,
-        });
-      } else {
-        this.props.setUser(response);
+    signup(signupData)
+      .then(response => {
+        this.props.decodeTokenAndSetUser(response.token);
         this.setState({
           isLoading: false,
         });
         this.props.history.push('/chats');
-      }
-    });
+      })
+      .catch(error => {
+        this.setState({
+          error,
+          isLoading: false,
+        });
+      });
   }
 
   render() {
@@ -107,4 +105,4 @@ export class AuthenticationComponent extends Component {
   }
 }
 
-export const Authentication = withRouter(connect(null, { setUser })(AuthenticationComponent));
+export const Authentication = withRouter(connect(null, { decodeTokenAndSetUser })(AuthenticationComponent));
