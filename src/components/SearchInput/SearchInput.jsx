@@ -22,7 +22,7 @@ export const SearchInput = connect(stateToProps)(
 
     handleChange(event) {
       const value = event.target.value;
-      this.props.dispatch(setSearch(value));
+      this.props.dispatch(setSearch(value.toLowerCase()));
     }
 
     resetState() {
