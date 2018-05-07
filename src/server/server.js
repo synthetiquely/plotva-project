@@ -14,6 +14,7 @@ const { connect } = require('./database');
 
 const chatController = require('./controllers/chatController');
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/user');
 
 exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
   return connect(databaseConfig).then(db => {
@@ -39,6 +40,7 @@ exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
       });
 
       app.use('/api/auth', authRouter);
+      app.use('/api/user', userRouter);
       chatController(db, io);
 
       app.use((req, res, next) => {

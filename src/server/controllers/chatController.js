@@ -44,6 +44,7 @@ module.exports = function(db, io) {
       currentUser = await identifyUserByToken(db, token).catch(error => {
         throw new Error(`Cannot load user: ${error}`);
       });
+
       if (!isDisconnected) {
         ONLINE[currentUser._id] = true;
       }
@@ -169,7 +170,11 @@ module.exports = function(db, io) {
 
     // Rooms of current user
     requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
-      return getUserRooms(db, currentUser._id, params);
+      if (currentUser._id) {
+        return getUserRooms(db, currentUser._id, params);
+      } else {
+        return null;
+      }
     });
 
     // Join current user to room

@@ -2,19 +2,14 @@ const jwt = require('jsonwebtoken');
 const { getUserByEmail } = require('../database/user');
 
 const authenticateUser = async (req, res, next) => {
-  const authorizationHeader = req.headers['authorization'];
-
-  let token;
-  if (authorizationHeader) {
-    token = authorizationHeader.split(' ')[1];
-  }
-
+  const { token } = req.cookies;
   if (token) {
     try {
       const decoded = await jwt.verify(token, String(process.env.JWT_SECRET));
       if (decoded !== null) {
         const user = await getUserByEmail(req.db, decoded.email);
         if (user) {
+          req.currentUser = user;
           next();
         } else {
           throw new Error('Токен не валиден');
@@ -23,7 +18,7 @@ const authenticateUser = async (req, res, next) => {
         throw new Error('Ошибка при проверке валидности токена');
       }
     } catch (error) {
-      res.status(403).send('Токен не валиден. Запрос запрещен.');
+      res.status(401).send('Токен не валиден. Запрос запрещен.');
     }
   }
 };

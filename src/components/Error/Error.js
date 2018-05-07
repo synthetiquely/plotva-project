@@ -8,15 +8,17 @@ const generateErrorMessage = code => {
     case errorCodes.AUTHENTICATION_ERROR:
       return 'Не можем войти с такими учетными данными. Попробуйте другое имя или пароль.';
     case errorCodes.FETCH_CONTACTS_ERROR:
-      return 'An API error has occured while trying to get contacts. Try to reload the page.';
+      return 'Не можем получить список контактов. Попробуйте перезагрузить страницу.';
     case errorCodes.FETCH_ROOMS_ERROR:
-      return 'An API error has occured while trying to get rooms. Try to reload the page.';
+      return 'Не можем получить список чатов. Попробуйте перезагрузить страницу.';
     case errorCodes.FETCH_MESSAGES_ERROR:
-      return 'An API error has occured while trying to get messages. Try to reload the page.';
+      return 'Не можем получить список сообщений. Попробуйте перезагрузить страницу.';
     case errorCodes.SEND_MESSAGE_ERROR:
-      return 'An error has occured while trying to send a message. Try to reload the page.';
+      return 'Не можем отправить сообщение сейчас. Попробуйте позже';
+    case errorCodes.UPDATE_USER_ERROR:
+      return 'Произошла ошибка при обновлении пользователя. Попробуйте еще раз позже.';
     default:
-      return 'An unexpected error has occured. Try to reload the page. Try to reload the page.';
+      return 'Произошла неизвестная ошибка. Попробуйте перезагрузить страницу.';
   }
 };
 

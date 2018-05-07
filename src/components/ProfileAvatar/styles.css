@@ -1,0 +1,30 @@
+.dropzone {
+  padding: 10px 0;
+}
+
+.dropzone_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+}
+
+.field {
+  border-radius: 102px;
+  height: 204px;
+  width: 204px;
+}
+
+.field:hover {
+  border: 2px dashed grey;
+}
+
+.profile-info_img {
+  clip-path: circle(100px at 100px 100px);
+}
+
+.upload-help {
+  margin: 0;
+  text-align: center;
+}

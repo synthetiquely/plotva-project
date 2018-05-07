@@ -9,6 +9,10 @@
   cursor: pointer;
 }
 
+.btn.fullWidth {
+  width: 100%;
+}
+
 .btn:hover,
 .btn:active,
 .btn:focus {

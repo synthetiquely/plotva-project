@@ -26,12 +26,12 @@ const autosignin = async (req, res) => {};
 const signin = async (req, res) => {
   const data = req.body;
   if (!data) {
-    return res.status(403).json({ error: 'Не можем авторизировать пользователя с такими данными.' });
+    return res.status(401).json({ error: 'Не можем авторизировать пользователя с такими данными.' });
   }
   const user = await getUserByEmail(req.db, data.email);
 
   if (!user) {
-    return res.status(403).json({ error: 'Нет такого пользователя. Проверьте введенные данные.' });
+    return res.status(401).json({ error: 'Нет такого пользователя. Проверьте введенные данные.' });
   }
 
   if (validatePassword(data.password, user)) {
@@ -46,13 +46,13 @@ const signin = async (req, res) => {
     });
     res.json({ token });
   } else {
-    return res.status(403).json({ error: 'Неверный email или пароль.' });
+    return res.status(401).json({ error: 'Неверный email или пароль.' });
   }
 };
 const signup = async (req, res) => {
   const data = req.body;
   if (!data) {
-    return res.status(403).json({ error: 'Не можем зарегестрировать пользователя с такими данными.' });
+    return res.status(400).json({ error: 'Не можем зарегестрировать пользователя с такими данными.' });
   }
 
   const user = await getUserByEmail(req.db, data.email);

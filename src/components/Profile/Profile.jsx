@@ -2,22 +2,74 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ProfileEdit } from '../ProfileEdit/ProfileEdit';
-import { Icon } from '../Icon/Icon';
+import { ProfileAvatar } from '../ProfileAvatar/ProfileAvatar';
+import { Spinner } from '../Spinner/Spinner';
+import { Error } from '../Error/Error';
+import { UPDATE_USER_ERROR } from '../../errorCodes';
+import { updateAvatar, updateProfile } from '../../store/actions/userActions';
+import defaultAvatar from './images/default_avatar.jpg';
 
 import './Profile.css';
 
 class ProfileComponent extends Component {
-  state = {
-    edit: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      edit: false,
+      error: null,
+    };
+    this.toggleEdit = this.toggleEdit.bind(this);
+    this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
+    this.handleChangeProfile = this.handleChangeProfile.bind(this);
+  }
 
-  toggleEdit = () => {
+  toggleEdit() {
     this.setState(prevState => ({
       edit: !prevState.edit,
     }));
-  };
+  }
+
+  handleChangeAvatar(avatar) {
+    this.setState({
+      isLoading: true,
+    });
+    this.props
+      .updateAvatar(avatar)
+      .then(() => {
+        this.setState({
+          isLoading: false,
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          error,
+        });
+      });
+  }
+
+  handleChangeProfile(data) {
+    this.setState({
+      isLoading: true,
+    });
+    this.props
+      .updateProfile(data)
+      .then(() => {
+        this.setState({
+          isLoading: false,
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          error,
+        });
+      });
+  }
 
   render() {
+    const { isLoading, error } = this.state;
     const { user } = this.props;
     if (!user) {
       return <Redirect to="/" />;
@@ -25,18 +77,33 @@ class ProfileComponent extends Component {
     return (
       <React.Fragment>
         <div className="profile-info">
-          {user.img && <img src={user.img} alt={user.name} className="profile-info_img" />}
-          <div className="profile-info_txt">
-            <p className="profile-info_name">{user.name}</p>
-            <p className="profile-info_email">{user.email}</p>
-            <p className="profile-info_phone">{user.phone}</p>
+          <ProfileAvatar image={user.img ? user.img : defaultAvatar} changeAvatar={this.handleChangeAvatar} />
+          <div className="profile-info_wrapper">
+            <button className="profile-info_edit" onClick={this.toggleEdit}>
+              {this.state.edit ? 'Отменить изменения' : 'Редактировать'}
+            </button>
           </div>
-          <button className="profile-info_edit" onClick={this.toggleEdit}>
-            <Icon type="header-write" />
-          </button>
+          {this.state.edit ? null : (
+            <div className="profile-info_txt">
+              <p className="profile-info_name">{user.name}</p>
+              <p className="profile-info_status">в сети</p>
+              <p className="profile-info_email">
+                <span className="profile-info_label">Электронный адрес:</span> {user.email}
+              </p>
+              <p className="profile-info_phone">
+                <span className="profile-info_label">Номер телефона:</span> {user.phone}
+              </p>
+            </div>
+          )}
         </div>
 
-        {this.state.edit && <ProfileEdit toggleEdit={this.toggleEdit} />}
+        {this.state.edit && (
+          <ProfileEdit user={user} changeProfileData={this.handleChangeProfile} toggleEdit={this.toggleEdit} />
+        )}
+
+        {isLoading && <Spinner />}
+
+        {error && <Error code={UPDATE_USER_ERROR} />}
       </React.Fragment>
     );
   }
@@ -46,4 +113,4 @@ const stateToProps = state => ({
   user: state.user.user,
 });
 
-export const Profile = connect(stateToProps)(ProfileComponent);
+export const Profile = connect(stateToProps, { updateAvatar, updateProfile })(ProfileComponent);

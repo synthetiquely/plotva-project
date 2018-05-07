@@ -1,3 +1,7 @@
 .profile-edit {
   margin: 10px 0;
 }
+
+.profile-edit_button {
+  width: 100%;
+}
