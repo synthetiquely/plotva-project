@@ -17,3 +17,10 @@ export const updateAvatar = data => {
     credentials: 'same-origin',
   }).then(response => response.json());
 };
+
+export const logout = () => {
+  fetch('/api/auth/signout', {
+    method: 'get',
+    credentials: 'same-origin',
+  });
+};

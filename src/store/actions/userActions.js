@@ -46,6 +46,11 @@ export const updateProfile = userData => async dispatch => {
   }
 };
 
+export const logout = () => async dispatch => {
+  await userApi.logout();
+  dispatch(setUser(null));
+};
+
 export const fetchUsers = () => async (dispatch, getState) => {
   const next = getState().user.next;
 

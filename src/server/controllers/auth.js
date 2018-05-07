@@ -21,6 +21,12 @@ const cookie = async (req, res) => {
   }
 };
 
+const signout = (req, res) => {
+  res.clearCookie('sid', { path: '/' });
+  res.clearCookie('token', { path: '/' });
+  res.json({});
+};
+
 const autosignin = async (req, res) => {};
 
 const signin = async (req, res) => {
@@ -82,4 +88,5 @@ module.exports = {
   signin,
   signup,
   cookie,
+  signout,
 };
