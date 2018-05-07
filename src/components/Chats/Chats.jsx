@@ -27,13 +27,13 @@ export class ChatsComponent extends PureComponent {
     if (nextProps.rooms && nextProps.rooms.length) {
       const rooms = nextProps.rooms.map(room => {
         const lastMessage =
-          nextProps.messages[room.id] &&
-          nextProps.messages[room.id].messages &&
-          nextProps.messages[room.id].messages[nextProps.messages[room.id].messages.length - 1];
+          nextProps.messages[room._id] &&
+          nextProps.messages[room._id].messages &&
+          nextProps.messages[room._id].messages[nextProps.messages[room._id].messages.length - 1];
         return {
           _id: room._id,
           userName: room.userName,
-          content: (lastMessage && lastMessage.message) || 'Нет сообщений',
+          content: (lastMessage && lastMessage.text) || 'Нет сообщений',
         };
       });
 

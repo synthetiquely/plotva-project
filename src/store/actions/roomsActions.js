@@ -1,4 +1,5 @@
 import { ROOMS_SET, NEW_ROOM_NAME_SET } from './actionTypes';
+import { fetchMessages } from './messagesActions';
 import api from '../../api';
 
 export const setRooms = payload => ({
@@ -18,6 +19,7 @@ export const fetchRooms = () => async (dispatch, getState) => {
     res.items.map(async room => {
       let chatName = '';
       let status = '';
+      dispatch(fetchMessages(room._id));
       if (room.users.length > 2) {
         chatName = room.name || 'Групповой чат';
         status = `${room.users.length} участников`;
