@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { MessagesList } from '../MessagesList/MessagesList';
-import { fetchMessages } from '../../store/actions/messagesActions';
+import { fetchMessages, selectMessage } from '../../store/actions/messagesActions';
 import { Error } from '../Error/Error';
 import { NoResults } from '../NoResults/NoResults';
 import { FETCH_MESSAGES_ERROR } from '../../errorCodes';
@@ -15,6 +15,7 @@ class ChatComponent extends PureComponent {
       error: null,
     };
     this.fetchNext = this.fetchNext.bind(this);
+    this.handleSelectMessage = this.handleSelectMessage.bind(this);
   }
 
   componentDidMount() {
@@ -31,6 +32,16 @@ class ChatComponent extends PureComponent {
     }
   }
 
+  handleSelectMessage(message) {
+    return () => {
+      if (this.props.messages.selectedMessage && this.props.messages.selectedMessage.id === message.id) {
+        this.props.selectMessage(null);
+      } else {
+        this.props.selectMessage(message);
+      }
+    };
+  }
+
   render() {
     const { error } = this.state;
     const { messages, match } = this.props;
@@ -41,7 +52,13 @@ class ChatComponent extends PureComponent {
 
     return (
       <InfiniteScroller loadMore={this.fetchNext}>
-        {messages[match.params.id] ? <MessagesList messages={messages[match.params.id].messages} /> : null}
+        {messages[match.params.id] ? (
+          <MessagesList
+            handleSelectMessage={this.handleSelectMessage}
+            selectedMessage={messages.selectedMessage}
+            messages={messages[match.params.id].messages}
+          />
+        ) : null}
         {error ? <Error code={FETCH_MESSAGES_ERROR} /> : null}
       </InfiniteScroller>
     );
@@ -53,4 +70,4 @@ const stateToProps = state => ({
   messages: state.messages,
 });
 
-export const Chat = withRouter(connect(stateToProps, { fetchMessages })(ChatComponent));
+export const Chat = withRouter(connect(stateToProps, { fetchMessages, selectMessage })(ChatComponent));

@@ -74,3 +74,9 @@
   height: 18px;
   background-image: url(./img/logout.svg);
 }
+
+.icon_copy {
+  width: 22px;
+  height: 22px;
+  background-image: url(./img/copy.svg);
+}

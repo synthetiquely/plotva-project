@@ -29,6 +29,12 @@
   align-items: center;
 }
 
+.header__right__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .header__center {
   flex: 1 1 100%;
   display: flex;
@@ -37,4 +43,17 @@
   align-items: center;
   max-width: calc(100% - 160px);
   text-align: center;
+}
+
+.copy-to-clipboard {
+  padding: 3px;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+.copy-to-clipboard:active,
+.copy-to-clipboard:hover,
+.copy-to-clipboard:focus {
+  border: 1px solid #edf9f3;
 }

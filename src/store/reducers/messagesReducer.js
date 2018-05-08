@@ -1,7 +1,16 @@
-import { MESSAGES_SET, MESSAGES_APPENDED } from '../actions/actionTypes';
+import { MESSAGES_SET, MESSAGES_APPENDED, MESSAGE_SELECTED } from '../actions/actionTypes';
 
-export const messagesReducer = (state = {}, action) => {
+const initialState = {
+  selectedMessage: null,
+};
+
+export const messagesReducer = (state = initialState, action) => {
   switch (action.type) {
+    case MESSAGE_SELECTED:
+      return {
+        ...state,
+        selectedMessage: action.payload,
+      };
     case MESSAGES_SET:
       return {
         ...state,

@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { Notification } from 'react-notification';
+
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { Link, withRouter } from 'react-router-dom';
 import { Icon } from '../Icon/Icon';
 import { SearchInput } from '../SearchInput/SearchInput';
@@ -13,6 +16,10 @@ import { setNewRoomName } from '../../store/actions/roomsActions';
 import { connect } from 'react-redux';
 
 class HeaderComponent extends Component {
+  state = {
+    isActive: false,
+  };
+
   newChat = async () => {
     const { user, selectedUsers } = this.props;
     try {
@@ -51,8 +58,17 @@ class HeaderComponent extends Component {
     }
   };
 
+  toggleNotification = () => {
+    this.setState(prevState => {
+      return {
+        isActive: !prevState.isActive,
+      };
+    });
+  };
+
   render() {
-    let { title, subtitle, type = 'chats' } = this.props;
+    const { isActive } = this.state;
+    let { title, subtitle, selectedMessage, type = 'chats' } = this.props;
     let size = subtitle ? 'lg' : 'sm';
 
     return (
@@ -87,8 +103,26 @@ class HeaderComponent extends Component {
               <Header type="action" txt="Отменить" />
             </Link>
           )}
-          {type === 'dialog' && <Avatar color="4" defaultName="C" size="xsmall" />}
+          {type === 'dialog' && !selectedMessage && <Avatar color="4" defaultName="C" size="xsmall" />}
+          {type === 'dialog' &&
+            selectedMessage && (
+              <div className="header__right__actions">
+                <CopyToClipboard text={selectedMessage.text} onCopy={this.toggleNotification}>
+                  <button className="copy-to-clipboard" title="Copy message">
+                    <Icon type="copy" />
+                  </button>
+                </CopyToClipboard>
+                <Avatar color="4" defaultName="C" size="xsmall" />
+              </div>
+            )}
         </div>
+
+        <Notification
+          isActive={isActive}
+          message={'Скопировано!'}
+          dismissAfter={2000}
+          onDismiss={this.toggleNotification}
+        />
       </div>
     );
   }
@@ -99,6 +133,7 @@ const stateToProps = state => ({
   newRoomChatName: state.rooms.newRoomName,
   user: state.user.user,
   users: state.user.users,
+  selectedMessage: state.messages.selectedMessage,
 });
 
 export const Header = connect(stateToProps)(withRouter(HeaderComponent));

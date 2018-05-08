@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('socket.io-cookie-parser');
 const cookie = require('cookie-parser');
 const cloudinary = require('cloudinary');
-const { createReadStream, stat } = require('fs');
 
 const app = express();
 const http = require('http').Server(app);

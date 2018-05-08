@@ -1,11 +1,25 @@
 .message-wrapper {
+  margin: 0 -8px;
   display: flex;
-  padding: 6px 56px 6px 6px;
+  padding: 6px 56px 14px;
+  cursor: pointer;
 }
 
 .message-wrapper_my {
+  margin: 0 -8px;
   flex-direction: row-reverse;
-  padding: 6px 6px 6px 56px;
+  padding: 6px 14px 6px 56px;
+  cursor: pointer;
+}
+
+.message-wrapper_highlighted {
+  background-color: #edf9f3;
+  cursor: pointer;
+}
+
+.message-wrapper_my_highlighted {
+  background-color: #edf9f3;
+  cursor: pointer;
 }
 
 .message {
@@ -26,7 +40,6 @@
 }
 
 .message_my {
-  border-color: #f2f6fa;
   border-top-right-radius: 0;
   border-bottom-left-radius: 16px;
   background-color: #f2f6fa;

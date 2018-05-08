@@ -1,4 +1,4 @@
-import { MESSAGES_SET, MESSAGES_APPENDED } from './actionTypes';
+import { MESSAGES_SET, MESSAGES_APPENDED, MESSAGE_SELECTED } from './actionTypes';
 import api from '../../api';
 
 export const setMessages = payload => ({
@@ -8,6 +8,11 @@ export const setMessages = payload => ({
 
 export const appendMessages = payload => ({
   type: MESSAGES_APPENDED,
+  payload,
+});
+
+export const selectMessage = payload => ({
+  type: MESSAGE_SELECTED,
   payload,
 });
 

@@ -4,6 +4,7 @@ export const SET_SELECTED = 'SET_SELECTED';
 
 export const MESSAGES_SET = 'MESSAGES_SET';
 export const MESSAGES_APPENDED = 'MESSAGES_APPENDED';
+export const MESSAGE_SELECTED = 'MESSAGE_SELECTED';
 
 export const SET_SEARCH = 'SET_SEARCH';
 
