@@ -1,7 +1,7 @@
 .message-wrapper {
   margin: 0 -8px;
   display: flex;
-  padding: 6px 56px 14px;
+  padding: 6px 56px 6px 14px;
   cursor: pointer;
 }
 
@@ -33,7 +33,7 @@
   color: #000;
   border: 1px solid #c3cede;
   border-radius: 16px;
-  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
   background-color: #fff;
   font-size: 17px;
   line-height: 22px;
@@ -41,12 +41,12 @@
 
 .message_my {
   border-top-right-radius: 0;
-  border-bottom-left-radius: 16px;
+  border-top-left-radius: 16px;
   background-color: #f2f6fa;
 }
 
 .message__time {
-  right: 10px;
+  left: 10px;
   color: #555;
 }
 
@@ -64,7 +64,8 @@
 }
 
 .message_my .message__time {
-  right: 20px;
+  left: unset;
+  right: 10px;
   color: #555;
 }
 

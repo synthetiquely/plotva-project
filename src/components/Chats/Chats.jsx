@@ -34,6 +34,9 @@ export class ChatsComponent extends PureComponent {
           _id: room._id,
           userName: room.userName,
           content: (lastMessage && lastMessage.text) || 'Нет сообщений',
+          contentType: 'room',
+          isRead: lastMessage.isMy ? true : lastMessage.isRead,
+          avatar: room.avatar,
         };
       });
 

@@ -3,7 +3,13 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { MessagesList } from '../MessagesList/MessagesList';
-import { fetchMessages, selectMessage } from '../../store/actions/messagesActions';
+import {
+  fetchMessagesForFirstTime,
+  fetchMessages,
+  selectMessage,
+  readMessages,
+} from '../../store/actions/messagesActions';
+import { Spinner } from '../Spinner/Spinner';
 import { Error } from '../Error/Error';
 import { NoResults } from '../NoResults/NoResults';
 import { FETCH_MESSAGES_ERROR } from '../../errorCodes';
@@ -12,14 +18,62 @@ class ChatComponent extends PureComponent {
   constructor() {
     super();
     this.state = {
+      isLoading: false,
       error: null,
     };
     this.fetchNext = this.fetchNext.bind(this);
     this.handleSelectMessage = this.handleSelectMessage.bind(this);
+    this.setRefToBottomLine = this.setRefToBottomLine.bind(this);
+    this.onScrollToBottom = this.onScrollToBottom.bind(this);
   }
 
   componentDidMount() {
-    this.fetchNext();
+    this.fetchMessages();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.onScrollToBottom();
+    } else if (
+      prevProps.messages[prevProps.match.params.id].messages.length <
+      this.props.messages[this.props.match.params.id].messages.length
+    ) {
+      this.onScrollToBottom();
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    if (
+      nextProps.messages[nextProps.match.params.id] &&
+      nextProps.messages[nextProps.match.params.id].messages.length
+    ) {
+      const notReadMessages = nextProps.messages[nextProps.match.params.id].messages.filter(
+        message => !message.isRead && !message.isMy,
+      );
+
+      if (notReadMessages.length) {
+        nextProps.readMessages(nextProps.match.params.id);
+      }
+    }
+
+    return null;
+  }
+
+  async fetchMessages() {
+    try {
+      this.setState({
+        isLoading: true,
+      });
+      await this.props.fetchMessagesForFirstTime(this.props.match.params.id);
+      this.setState({
+        isLoading: false,
+      });
+    } catch (error) {
+      this.setState({
+        error,
+        isLoading: false,
+      });
+    }
   }
 
   async fetchNext() {
@@ -42,22 +96,39 @@ class ChatComponent extends PureComponent {
     };
   }
 
+  setRefToBottomLine(node) {
+    this.el = node;
+  }
+
+  onScrollToBottom() {
+    if (this.el) {
+      this.el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   render() {
-    const { error } = this.state;
+    const { isLoading, error } = this.state;
     const { messages, match } = this.props;
 
     if (!messages[match.params.id] && !error) {
       return <NoResults text="No messages here yet..." />;
     }
 
+    if (isLoading) {
+      return <Spinner />;
+    }
+
     return (
-      <InfiniteScroller loadMore={this.fetchNext}>
+      <InfiniteScroller reverse loadMore={this.fetchNext}>
         {messages[match.params.id] ? (
-          <MessagesList
-            handleSelectMessage={this.handleSelectMessage}
-            selectedMessage={messages.selectedMessage}
-            messages={messages[match.params.id].messages}
-          />
+          <React.Fragment>
+            <MessagesList
+              handleSelectMessage={this.handleSelectMessage}
+              selectedMessage={messages.selectedMessage}
+              messages={messages[match.params.id].messages}
+            />
+            <div ref={this.setRefToBottomLine} />
+          </React.Fragment>
         ) : null}
         {error ? <Error code={FETCH_MESSAGES_ERROR} /> : null}
       </InfiniteScroller>
@@ -70,4 +141,6 @@ const stateToProps = state => ({
   messages: state.messages,
 });
 
-export const Chat = withRouter(connect(stateToProps, { fetchMessages, selectMessage })(ChatComponent));
+export const Chat = withRouter(
+  connect(stateToProps, { fetchMessagesForFirstTime, fetchMessages, selectMessage, readMessages })(ChatComponent),
+);

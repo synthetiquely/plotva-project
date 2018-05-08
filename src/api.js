@@ -181,6 +181,18 @@ class Api {
   }
 
   /**
+   * Send message to the room
+   *
+   * @param {string} roomId
+   * @param {string} message
+   *
+   * @return {Promise<Message>}
+   */
+  async readMessage(roomId, message) {
+    return this._requestResponse(MESSAGES.READ_MESSAGE, { roomId, message });
+  }
+
+  /**
    * Return list of messages
    *
    * @param {{}} [filter]
@@ -200,6 +212,10 @@ class Api {
    */
   async getRoomMessages(roomId) {
     return this.getMessages({ roomId, order: { created_at: -1 } });
+  }
+
+  async getRoomLastMessage(roomId) {
+    return this._requestResponse(MESSAGES.GET_LAST_MESSAGE, roomId);
   }
 
   /**
@@ -252,6 +268,12 @@ class Api {
     await this._connectPromise;
 
     this.io.on(MESSAGES.MESSAGE, callback);
+  }
+
+  async onReadMessage(callback) {
+    await this._connectPromise;
+
+    this.io.on(MESSAGES.MESSAGE_READ, callback);
   }
 }
 

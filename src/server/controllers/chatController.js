@@ -1,6 +1,6 @@
 const { findUserByToken, getUsers } = require('../database/user');
 const { joinRoom, leaveRoom, getRooms, getUserRooms, createRoom } = require('../database/room');
-const { getMessages, sendMessage } = require('../database/messages');
+const { getMessages, getLastMessage, sendMessage, updateMessage } = require('../database/messages');
 const TYPES = require('../messages');
 
 /**
@@ -150,6 +150,10 @@ module.exports = function(db, io) {
       socket.to('room:' + message.roomId).emit(TYPES.MESSAGE, message);
     }
 
+    function readMessage(message) {
+      socket.to('room:' + message.roomId).emit(TYPES.MESSAGE_READ, message);
+    }
+
     // Receive current user information
     requestResponse(TYPES.CURRENT_USER, () => currentUser);
 
@@ -216,15 +220,28 @@ module.exports = function(db, io) {
       let message = await sendMessage(db, {
         ...payload,
         userId: currentUser._id,
+        isRead: false,
       });
-
       newMessage(message);
-
       return message;
+    });
+
+    // Send message
+    requestResponse(TYPES.READ_MESSAGE, async payload => {
+      if (payload.message.userId === currentUser._id) {
+        return;
+      } else {
+        const message = await updateMessage(db, payload.message);
+        readMessage(message);
+        return message;
+      }
     });
 
     // Get messages
     requestResponse(TYPES.MESSAGES, payload => getMessages(db, payload));
+
+    // Get last messages
+    requestResponse(TYPES.GET_LAST_MESSAGE, payload => getLastMessage(db, payload));
 
     socket.on('disconnect', async () => {
       isDisconnected = true;

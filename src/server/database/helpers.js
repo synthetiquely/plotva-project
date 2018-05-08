@@ -25,10 +25,6 @@ async function pageableCollection(collection, { lastId, order, limit = 10, ...qu
 
   let queryBuilder = collection.find(query, { limit });
 
-  if (order) {
-    queryBuilder = queryBuilder.sort(order);
-  }
-
   if (typeof query._id === 'string') {
     query._id = ObjectId(query._id.toString());
   }
@@ -63,12 +59,12 @@ async function pageableCollection(collection, { lastId, order, limit = 10, ...qu
  */
 async function insertOrUpdateEntity(collection, data) {
   if (data._id) {
-    await collection.findOneAndUpdate({ _id: data._id }, data, { returnNewDocument: true });
+    await collection.findOneAndUpdate({ _id: ObjectId(data._id.toString()) }, data, { returnNewDocument: true });
   } else {
     let result = await collection.insertOne(data);
     data._id = result.insertedId;
   }
-  return collection.findOne({ _id: data._id });
+  return collection.findOne({ _id: ObjectId(data._id.toString()) });
 }
 
 module.exports = {

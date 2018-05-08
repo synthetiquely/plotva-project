@@ -95,7 +95,7 @@ class HeaderComponent extends Component {
             ))}
           {type === 'chats' && (
             <Link to="/create_chat">
-              <Icon type="header-write" />
+              <Icon type="header-add" onClick={this.newChat} />
             </Link>
           )}
           {type === 'search' && (

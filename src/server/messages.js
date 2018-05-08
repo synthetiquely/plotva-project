@@ -70,14 +70,31 @@ module.exports = {
   SEND_MESSAGE: 'SEND_MESSAGE',
 
   /**
+   * Read message
+   */
+  READ_MESSAGE: 'READ_MESSAGE',
+
+  /**
+   * Delete message
+   */
+  DELETE_MESSAGE: 'DELETE_MESSAGE',
+
+  /**
    * Show list of messages
    */
   MESSAGES: 'MESSAGES',
+
+  GET_LAST_MESSAGE: 'GET_LAST_MESSAGE',
 
   /**
    * New message coming
    */
   MESSAGE: 'MESSAGE',
+
+  /**
+   * Messages read by user
+   */
+  MESSAGE_READ: 'MESSAGE_READ',
 
   /**
    * Server error

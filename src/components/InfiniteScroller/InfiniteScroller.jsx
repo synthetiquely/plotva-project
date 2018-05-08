@@ -26,12 +26,21 @@ export class InfiniteScroller extends Component {
 
   handleScroll() {
     if (this.container) {
-      const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-      const windowHeight = window.innerHeight;
-      const maxScroll = this.container.clientHeight - windowHeight;
-      if (!this.state.isLoading) {
-        if (scrollTop + windowHeight >= maxScroll) {
-          this.loadMore();
+      if (this.props.reverse) {
+        const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        if (!this.state.isLoading) {
+          if (scrollTop === 0) {
+            this.loadMore();
+          }
+        } else {
+          const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+          const windowHeight = window.innerHeight;
+          const maxScroll = this.container.clientHeight - windowHeight;
+          if (!this.state.isLoading) {
+            if (scrollTop + windowHeight >= maxScroll - 200) {
+              this.loadMore();
+            }
+          }
         }
       }
     }

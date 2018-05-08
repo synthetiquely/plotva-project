@@ -1,5 +1,5 @@
 import { ROOMS_SET, NEW_ROOM_NAME_SET } from './actionTypes';
-import { fetchMessages } from './messagesActions';
+import { fetchLastMessage } from './messagesActions';
 import api from '../../api';
 
 export const setRooms = payload => ({
@@ -19,7 +19,9 @@ export const fetchRooms = () => async (dispatch, getState) => {
     res.items.map(async room => {
       let chatName = '';
       let status = '';
-      dispatch(fetchMessages(room._id));
+      let avatar = '';
+      await api.currentUserJoinRoom(room._id);
+      dispatch(fetchLastMessage(room._id));
       if (room.users.length > 2) {
         chatName = room.name || 'Групповой чат';
         status = `${room.users.length} участников`;
@@ -27,6 +29,7 @@ export const fetchRooms = () => async (dispatch, getState) => {
         const currentUserId = getState().user.user._id;
         const otherUserId = room.users[0] === currentUserId ? room.users[1] : room.users[0];
         const otherUser = await api.getUser(otherUserId);
+        avatar = otherUser.img;
         chatName = otherUser.name;
         status = otherUser.online ? 'в сети' : 'не в сети';
       }
@@ -35,6 +38,7 @@ export const fetchRooms = () => async (dispatch, getState) => {
         _id: room._id,
         userName: chatName,
         status,
+        avatar,
         users: room.users,
       };
     }),
