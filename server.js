@@ -1,3 +1,5 @@
+global.__basedir = __dirname;
+
 const { createServer } = require('./src/server/server');
 
 const {

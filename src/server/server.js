@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const attachIO = require('socket.io');
 const bodyParser = require('body-parser');
 const cookieParser = require('socket.io-cookie-parser');
@@ -19,7 +20,6 @@ const userRouter = require('./routes/user');
 exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
   return connect(databaseConfig).then(db => {
     return new Promise(resolve => {
-      //Cloudinary API Config
       cloudinary.config({
         cloud_name: apiProvider.cloud_name,
         api_key: apiProvider.api_key,
@@ -29,7 +29,7 @@ exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
       let io = attachIO(http);
       io.use(cookieParser());
 
-      app.use(express.static('build'));
+      app.use(express.static(path.join(global.__basedir, 'build')));
       app.use(cookie());
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: false }));
@@ -43,15 +43,8 @@ exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
       app.use('/api/user', userRouter);
       chatController(db, io);
 
-      app.use((req, res, next) => {
-        let index = 'build/index.html';
-        stat(index, (err, result) => {
-          if (err) {
-            next();
-          } else {
-            createReadStream(index).pipe(res);
-          }
-        });
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(global.__basedir, 'build', 'index.html'));
       });
 
       http.listen(serverConfig.port, function() {

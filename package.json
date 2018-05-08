@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:3001/",
-  "homepage": "https://synthetiquely.github.io/plotva-project/",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-polyfill": "^6.26.0",
