@@ -10,7 +10,10 @@ export const AuthenticationPageComponent = ({ user }) => {
     return <Redirect to="/chats" />;
   }
   return (
-    <Layout header={<Header type="profile" title="Добро пожаловать" subtitle="" />} content={<Authentication />} />
+    <Layout
+      header={<Header type="profile" title="Добро пожаловать" subtitle="" />}
+      content={<Authentication />}
+    />
   );
 };
 
@@ -18,4 +21,6 @@ const stateToProps = state => ({
   user: state.user.user,
 });
 
-export const AuthenticationPage = connect(stateToProps)(AuthenticationPageComponent);
+export const AuthenticationPage = connect(stateToProps)(
+  AuthenticationPageComponent,
+);

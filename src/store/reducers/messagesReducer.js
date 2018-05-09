@@ -1,4 +1,8 @@
-import { MESSAGES_SET, MESSAGES_APPENDED, MESSAGE_SELECTED } from '../actions/actionTypes';
+import {
+  MESSAGES_SET,
+  MESSAGES_APPENDED,
+  MESSAGE_SELECTED,
+} from '../actions/actionTypes';
 
 const initialState = {
   selectedMessage: null,
@@ -20,12 +24,18 @@ export const messagesReducer = (state = initialState, action) => {
         },
       };
     case MESSAGES_APPENDED:
-      if (state[action.payload.roomId] && state[action.payload.roomId].messages.length > 0) {
+      if (
+        state[action.payload.roomId] &&
+        state[action.payload.roomId].messages.length > 0
+      ) {
         return {
           ...state,
           [action.payload.roomId]: {
             ...state[action.payload.roomId],
-            messages: [...state[action.payload.roomId].messages, ...action.payload.messages],
+            messages: [
+              ...state[action.payload.roomId].messages,
+              ...action.payload.messages,
+            ],
             next: action.payload.next,
           },
         };

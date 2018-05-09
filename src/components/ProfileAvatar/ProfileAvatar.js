@@ -40,9 +40,13 @@ export class ProfileAvatar extends Component {
             onDrop={this.onDrop}
             className="field"
           >
-            {image && <img src={image} alt="user avatar" className="profile-info_img" />}
+            {image && (
+              <img src={image} alt="user avatar" className="profile-info_img" />
+            )}
           </Dropzone>
-          <p className="upload-help">Кликни на картинку, чтобы обновить аватар</p>
+          <p className="upload-help">
+            Кликни на картинку, чтобы обновить аватар
+          </p>
         </div>
       </div>
     );

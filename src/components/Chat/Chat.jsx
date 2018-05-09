@@ -32,10 +32,11 @@ class ChatComponent extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.match.params.id !== this.props.match.params.id) {
+    const { messages, match } = prevProps;
+    if (match.params.id !== this.props.match.params.id) {
       this.onScrollToBottom();
     } else if (
-      prevProps.messages[prevProps.match.params.id].messages.length <
+      messages[prevProps.match.params.id].messages.length <
       this.props.messages[this.props.match.params.id].messages.length
     ) {
       this.onScrollToBottom();
@@ -43,16 +44,17 @@ class ChatComponent extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps) {
+    const { messages, match } = nextProps;
     if (
-      nextProps.messages[nextProps.match.params.id] &&
-      nextProps.messages[nextProps.match.params.id].messages.length
+      messages[match.params.id] &&
+      messages[match.params.id].messages.length
     ) {
-      const notReadMessages = nextProps.messages[nextProps.match.params.id].messages.filter(
+      const notReadMessages = messages[match.params.id].messages.filter(
         message => !message.isRead && !message.isMy,
       );
 
       if (notReadMessages.length) {
-        nextProps.readMessages(nextProps.match.params.id);
+        nextProps.readMessages(match.params.id);
       }
     }
 
@@ -87,8 +89,9 @@ class ChatComponent extends PureComponent {
   }
 
   handleSelectMessage(message) {
+    const { selectedMessage } = this.props.messages;
     return () => {
-      if (this.props.messages.selectedMessage && this.props.messages.selectedMessage.id === message.id) {
+      if (selectedMessage && selectedMessage.id === message.id) {
         this.props.selectMessage(null);
       } else {
         this.props.selectMessage(message);
@@ -142,5 +145,10 @@ const stateToProps = state => ({
 });
 
 export const Chat = withRouter(
-  connect(stateToProps, { fetchMessagesForFirstTime, fetchMessages, selectMessage, readMessages })(ChatComponent),
+  connect(stateToProps, {
+    fetchMessagesForFirstTime,
+    fetchMessages,
+    selectMessage,
+    readMessages,
+  })(ChatComponent),
 );

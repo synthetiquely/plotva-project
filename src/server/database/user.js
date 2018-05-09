@@ -5,23 +5,6 @@ const { pageableCollection, insertOrUpdateEntity } = require('./helpers');
 
 const TABLE = 'users';
 
-/**
- * @typedef {{
- *  [_id]: string,
- *  name: string,
- *  email: string,
- *  phone: string,
- *  password: string,
- *  [status]: boolean
- * }} User
- */
-
-/**
- * @param {Db} db
- * @param {string} userId
- *
- * @returns {Promise<User>}
- */
 async function getUser(db, userId) {
   return db.collection(TABLE).findOne(
     {
@@ -41,22 +24,10 @@ async function findUserByToken(db, token) {
   );
 }
 
-/**
- * @param {Db} db
- * @param {string} email
- *
- * @returns {Promise<User>}
- */
 async function getUserByEmail(db, email) {
   return db.collection(TABLE).findOne({ email });
 }
 
-/**
- * @param {Db} db
- * @param {User} user
- *
- * @returns {Promise<User>}
- */
 async function saveUser(db, user) {
   if (user._id) {
     user._id = ObjectId(user._id.toString());
@@ -65,13 +36,6 @@ async function saveUser(db, user) {
   return insertOrUpdateEntity(db.collection(TABLE), user);
 }
 
-/**
- * @param {string} sid
- * @param {Db} db
- * @param {User} user
- *
- * @returns {Promise<User>}
- */
 async function createUser(db, userData) {
   if (userData.password) {
     userData.password = generatePasswordHash(userData.password);
@@ -79,12 +43,6 @@ async function createUser(db, userData) {
   return insertOrUpdateEntity(db.collection(TABLE), userData);
 }
 
-/**
- * @param {Db} db
- * @param {{}} [filter]
- *
- * @return {Promise<Pagination<User>>}
- */
 async function getUsers(db, filter) {
   return pageableCollection(db.collection(TABLE), filter);
 }

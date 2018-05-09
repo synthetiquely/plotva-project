@@ -26,7 +26,10 @@ class HeaderComponent extends Component {
       const rooms = await api.getRooms({ name: this.props.newRoomChatName });
       if (!rooms.count) {
         selectedUsers.push(user);
-        await this.createRoomWithUsers(this.props.newRoomChatName, selectedUsers);
+        await this.createRoomWithUsers(
+          this.props.newRoomChatName,
+          selectedUsers,
+        );
 
         const users = [].concat(this.props.users);
         users.forEach(user => {
@@ -44,7 +47,9 @@ class HeaderComponent extends Component {
   createRoomWithUsers = async (name, users) => {
     try {
       const room = await api.createRoom({ name });
-      await Promise.all(users.map(user => this.joinUserToRoom(user._id, room._id)));
+      await Promise.all(
+        users.map(user => this.joinUserToRoom(user._id, room._id)),
+      );
     } catch (err) {
       this.setState({ error: 'Произошла при создании комнаты.' });
     }
@@ -75,7 +80,13 @@ class HeaderComponent extends Component {
       <div className={`header header_${size}`}>
         <div className="header__left">
           {type === 'search' && <SearchInput />}
-          {type === 'dialog' && <HeaderBtn onClick={this.props.history.goBack} type="back" txt="Назад" />}
+          {type === 'dialog' && (
+            <HeaderBtn
+              onClick={this.props.history.goBack}
+              type="back"
+              txt="Назад"
+            />
+          )}
         </div>
 
         {title && (
@@ -103,11 +114,17 @@ class HeaderComponent extends Component {
               <Header type="action" txt="Отменить" />
             </Link>
           )}
-          {type === 'dialog' && !selectedMessage && <Avatar color="4" defaultName="C" size="xsmall" />}
+          {type === 'dialog' &&
+            !selectedMessage && (
+              <Avatar color="4" defaultName="C" size="xsmall" />
+            )}
           {type === 'dialog' &&
             selectedMessage && (
               <div className="header__right__actions">
-                <CopyToClipboard text={selectedMessage.text} onCopy={this.toggleNotification}>
+                <CopyToClipboard
+                  text={selectedMessage.text}
+                  onCopy={this.toggleNotification}
+                >
                   <button className="copy-to-clipboard" title="Copy message">
                     <Icon type="copy" />
                   </button>

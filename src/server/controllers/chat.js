@@ -1,6 +1,17 @@
 const { findUserByToken, getUsers } = require('../database/user');
-const { joinRoom, leaveRoom, getRooms, getUserRooms, createRoom } = require('../database/room');
-const { getMessages, getLastMessage, sendMessage, updateMessage } = require('../database/messages');
+const {
+  joinRoom,
+  leaveRoom,
+  getRooms,
+  getUserRooms,
+  createRoom,
+} = require('../database/room');
+const {
+  getMessages,
+  getLastMessage,
+  sendMessage,
+  updateMessage,
+} = require('../database/messages');
 const TYPES = require('../messages');
 
 /**
@@ -16,7 +27,10 @@ module.exports = function(db, io) {
    * @return {Pagination<User>}
    */
   function fillUsersWithStatus(users) {
-    users.items = users.items.map(user => ({ ...user, online: Boolean(ONLINE[user._id]) }));
+    users.items = users.items.map(user => ({
+      ...user,
+      online: Boolean(ONLINE[user._id]),
+    }));
 
     return users;
   }
@@ -241,7 +255,9 @@ module.exports = function(db, io) {
     requestResponse(TYPES.MESSAGES, payload => getMessages(db, payload));
 
     // Get last messages
-    requestResponse(TYPES.GET_LAST_MESSAGE, payload => getLastMessage(db, payload));
+    requestResponse(TYPES.GET_LAST_MESSAGE, payload =>
+      getLastMessage(db, payload),
+    );
 
     socket.on('disconnect', async () => {
       isDisconnected = true;

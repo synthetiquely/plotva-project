@@ -1,6 +1,9 @@
 import { SET_USER, SET_USERS, SET_SELECTED } from '../actions/actionTypes';
 
-export const userReducer = (state = { users: [], selectedUsers: [], next: null }, action) => {
+export const userReducer = (
+  state = { users: [], selectedUsers: [], next: null },
+  action,
+) => {
   switch (action.type) {
     case SET_USER:
       return {

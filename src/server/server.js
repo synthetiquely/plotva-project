@@ -12,7 +12,7 @@ require('dotenv').config();
 
 const { connect } = require('./database');
 
-const chatController = require('./controllers/chatController');
+const chatController = require('./controllers/chat');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 
@@ -47,7 +47,11 @@ exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
       });
 
       http.listen(serverConfig.port, function() {
-        console.log(`API server is listening at http://${serverConfig.host}:${serverConfig.port}`);
+        console.log(
+          `API server is listening at http://${serverConfig.host}:${
+            serverConfig.port
+          }`,
+        );
         resolve(db);
       });
     });

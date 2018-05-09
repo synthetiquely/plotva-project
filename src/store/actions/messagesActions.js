@@ -1,4 +1,8 @@
-import { MESSAGES_SET, MESSAGES_APPENDED, MESSAGE_SELECTED } from './actionTypes';
+import {
+  MESSAGES_SET,
+  MESSAGES_APPENDED,
+  MESSAGE_SELECTED,
+} from './actionTypes';
 import api from '../../api';
 
 export const setMessages = payload => ({
@@ -28,7 +32,13 @@ export const updateMessage = payload => (dispatch, getState) => {
     });
 
     if (messagesToUpdate.length) {
-      dispatch(setMessages({ roomId: payload.roomId, messages: messagesToUpdate, next: room.next }));
+      dispatch(
+        setMessages({
+          roomId: payload.roomId,
+          messages: messagesToUpdate,
+          next: room.next,
+        }),
+      );
     }
   }
 };
@@ -37,7 +47,9 @@ export const readMessages = roomId => async (dispatch, getState) => {
   const room = getState().messages[roomId];
   const currentUserId = getState().user.user._id;
   if (room) {
-    const notReadMessages = room.messages.filter(message => !message.isRead && !message.isMy);
+    const notReadMessages = room.messages.filter(
+      message => !message.isRead && !message.isMy,
+    );
     if (notReadMessages.length) {
       const updatedMessages = await Promise.all(
         notReadMessages.map(async notReadMessages => {
@@ -61,7 +73,9 @@ export const readMessages = roomId => async (dispatch, getState) => {
       });
 
       if (messagesToUpdate.length) {
-        dispatch(setMessages({ roomId, messages: messagesToUpdate, next: room.next }));
+        dispatch(
+          setMessages({ roomId, messages: messagesToUpdate, next: room.next }),
+        );
       }
     }
   }
@@ -110,7 +124,10 @@ export const fetchMessages = roomId => async (dispatch, getState) => {
   }
 };
 
-export const fetchMessagesForFirstTime = roomId => async (dispatch, getState) => {
+export const fetchMessagesForFirstTime = roomId => async (
+  dispatch,
+  getState,
+) => {
   const currentUserId = getState().user.user._id;
   let response;
   try {
@@ -134,7 +151,10 @@ export const fetchMessagesForFirstTime = roomId => async (dispatch, getState) =>
   }
 };
 
-export const sendMessage = (roomId, messageText) => async (dispatch, getState) => {
+export const sendMessage = (roomId, messageText) => async (
+  dispatch,
+  getState,
+) => {
   try {
     const currentUserId = getState().user.user._id;
     const response = await api.sendMessage(roomId, messageText);

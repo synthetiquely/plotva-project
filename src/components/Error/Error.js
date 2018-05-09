@@ -22,4 +22,6 @@ const generateErrorMessage = code => {
   }
 };
 
-export const Error = ({ code }) => <div className="error">{generateErrorMessage(code)}</div>;
+export const Error = ({ code }) => (
+  <div className="error">{generateErrorMessage(code)}</div>
+);

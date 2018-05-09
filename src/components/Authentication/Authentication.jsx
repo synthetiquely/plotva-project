@@ -105,4 +105,6 @@ export class AuthenticationComponent extends Component {
   }
 }
 
-export const Authentication = withRouter(connect(null, { decodeTokenAndSetUser })(AuthenticationComponent));
+export const Authentication = withRouter(
+  connect(null, { decodeTokenAndSetUser })(AuthenticationComponent),
+);

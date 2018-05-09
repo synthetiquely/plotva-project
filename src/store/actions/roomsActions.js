@@ -27,7 +27,8 @@ export const fetchRooms = () => async (dispatch, getState) => {
         status = `${room.users.length} участников`;
       } else if (room.users.length) {
         const currentUserId = getState().user.user._id;
-        const otherUserId = room.users[0] === currentUserId ? room.users[1] : room.users[0];
+        const otherUserId =
+          room.users[0] === currentUserId ? room.users[1] : room.users[0];
         const otherUser = await api.getUser(otherUserId);
         avatar = otherUser.img;
         chatName = otherUser.name;
@@ -46,7 +47,10 @@ export const fetchRooms = () => async (dispatch, getState) => {
   dispatch(setRooms({ rooms, next }));
 };
 
-export const changeOnlineStatusInRooms = (userId, status) => (dispatch, getState) => {
+export const changeOnlineStatusInRooms = (userId, status) => (
+  dispatch,
+  getState,
+) => {
   const rooms = getState().rooms.rooms;
   const next = getState().rooms.next;
 

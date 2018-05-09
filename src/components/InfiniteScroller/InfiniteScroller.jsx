@@ -17,23 +17,30 @@ export class InfiniteScroller extends Component {
   }
 
   componentDidMount() {
-    document.body.addEventListener('scroll', this.handleScroll, { passive: true, capture: true });
+    document.body.addEventListener('scroll', this.handleScroll, {
+      passive: true,
+      capture: true,
+    });
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('scroll', this.handleScroll, { capture: true });
+    document.body.removeEventListener('scroll', this.handleScroll, {
+      capture: true,
+    });
   }
 
   handleScroll() {
     if (this.container) {
       if (this.props.reverse) {
-        const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        const scrollTop =
+          document.body.scrollTop || document.documentElement.scrollTop;
         if (!this.state.isLoading) {
           if (scrollTop === 0) {
             this.loadMore();
           }
         } else {
-          const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+          const scrollTop =
+            document.body.scrollTop || document.documentElement.scrollTop;
           const windowHeight = window.innerHeight;
           const maxScroll = this.container.clientHeight - windowHeight;
           if (!this.state.isLoading) {

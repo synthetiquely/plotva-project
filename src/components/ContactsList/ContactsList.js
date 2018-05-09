@@ -59,12 +59,21 @@ class ContactsListComponent extends Component {
           {contacts.map((contact, index) => {
             const props = {};
             if (user) {
-              props.onClick = createChat ? () => addToChat(index) : this.getChatId(contact);
+              props.onClick = createChat
+                ? () => addToChat(index)
+                : this.getChatId(contact);
             } else {
               props.link = `/chat/${contact._id}`;
             }
             if (contact.userName.toLowerCase().indexOf(search) + 1 > 0) {
-              return <Contact key={index} color={`${index}`} {...props} {...contact} />;
+              return (
+                <Contact
+                  key={index}
+                  color={`${index}`}
+                  {...props}
+                  {...contact}
+                />
+              );
             }
             return null;
           })}

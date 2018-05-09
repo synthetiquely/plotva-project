@@ -24,12 +24,13 @@ export class ChatsComponent extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    if (nextProps.rooms && nextProps.rooms.length) {
-      const rooms = nextProps.rooms.map(room => {
+    const { rooms, messages } = nextProps;
+    if (rooms && rooms.length) {
+      const transformedRooms = rooms.map(room => {
         const lastMessage =
-          nextProps.messages[room._id] &&
-          nextProps.messages[room._id].messages &&
-          nextProps.messages[room._id].messages[nextProps.messages[room._id].messages.length - 1];
+          messages[room._id] &&
+          messages[room._id].messages &&
+          messages[room._id].messages[messages[room._id].messages.length - 1];
         return {
           _id: room._id,
           userName: room.userName,
@@ -41,7 +42,7 @@ export class ChatsComponent extends PureComponent {
       });
 
       return {
-        rooms,
+        rooms: transformedRooms,
       };
     }
 
@@ -76,7 +77,11 @@ export class ChatsComponent extends PureComponent {
     }
 
     return (
-      <InfiniteScroller hasResults={!!rooms.length} hasMore={!!next} loadMore={this.fetchNext}>
+      <InfiniteScroller
+        hasResults={!!rooms.length}
+        hasMore={!!next}
+        loadMore={this.fetchNext}
+      >
         <ContactsList contacts={rooms} search="" />
         {error ? <Error code={FETCH_ROOMS_ERROR} /> : null}
       </InfiniteScroller>

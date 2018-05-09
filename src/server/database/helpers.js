@@ -1,20 +1,9 @@
 const { ObjectId } = require('mongodb');
 
-/**
- * @typedef {{
- *  items: T[],
- *  next: *,
- *  count: number
- * }} Pagination<T>
- */
-
-/**
- * Create pagination
- *
- * @param {Collection} collection
- * @param filter
- */
-async function pageableCollection(collection, { lastId, order, limit = 10, ...query } = {}) {
+async function pageableCollection(
+  collection,
+  { lastId, order, limit = 10, ...query } = {},
+) {
   let count = await collection.find(query).count();
 
   if (lastId) {
@@ -49,17 +38,13 @@ async function pageableCollection(collection, { lastId, order, limit = 10, ...qu
   };
 }
 
-/**
- * Create pagination
- *
- * @param {Collection} collection
- * @param {*} data
- *
- * @return {Promise<*>}
- */
 async function insertOrUpdateEntity(collection, data) {
   if (data._id) {
-    await collection.findOneAndUpdate({ _id: ObjectId(data._id.toString()) }, data, { returnNewDocument: true });
+    await collection.findOneAndUpdate(
+      { _id: ObjectId(data._id.toString()) },
+      data,
+      { returnNewDocument: true },
+    );
   } else {
     let result = await collection.insertOne(data);
     data._id = result.insertedId;

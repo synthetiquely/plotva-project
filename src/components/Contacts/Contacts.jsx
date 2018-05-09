@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 import { ContactsList } from '../ContactsList/ContactsList';
 import { InfiniteScroller } from '../InfiniteScroller/InfiniteScroller';
 import { Contact } from '../Contact/Contact';
-import { fetchUsers, setUsers, setSelectedUsers } from '../../store/actions/userActions';
+import {
+  fetchUsers,
+  setUsers,
+  setSelectedUsers,
+} from '../../store/actions/userActions';
 import { NoResults } from '../NoResults/NoResults';
 import { Error } from '../Error/Error';
 import { Spinner } from '../Spinner/Spinner';
@@ -120,4 +124,8 @@ const stateToProps = state => ({
   current: state.search.currentUserSearch,
 });
 
-export const Contacts = connect(stateToProps, { fetchUsers, setUsers, setSelectedUsers })(ContactsComponent);
+export const Contacts = connect(stateToProps, {
+  fetchUsers,
+  setUsers,
+  setSelectedUsers,
+})(ContactsComponent);

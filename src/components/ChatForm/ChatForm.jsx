@@ -30,8 +30,16 @@ class ChatFormComponent extends PureComponent {
 
   render() {
     const { messageText } = this.state;
-    return <InputBar value={messageText} onChange={this.handleChange} onSubmit={this.handleSubmit} />;
+    return (
+      <InputBar
+        value={messageText}
+        onChange={this.handleChange}
+        onSubmit={this.handleSubmit}
+      />
+    );
   }
 }
 
-export const ChatForm = withRouter(connect(null, { sendMessage })(ChatFormComponent));
+export const ChatForm = withRouter(
+  connect(null, { sendMessage })(ChatFormComponent),
+);

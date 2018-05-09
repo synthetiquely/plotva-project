@@ -10,13 +10,25 @@ const settings = 'Профиль';
 export const Footer = ({ path }) => (
   <div className="footer">
     <Link to="/chats">
-      <FooterBtn icon="footer-chats" description={chats} active={path === chats} />
+      <FooterBtn
+        icon="footer-chats"
+        description={chats}
+        active={path === chats}
+      />
     </Link>
     <Link to="/contacts">
-      <FooterBtn icon="footer-contacts" description={contacts} active={path === contacts} />
+      <FooterBtn
+        icon="footer-contacts"
+        description={contacts}
+        active={path === contacts}
+      />
     </Link>
     <Link to="/profile">
-      <FooterBtn icon="footer-contact" description={settings} active={path === settings} />
+      <FooterBtn
+        icon="footer-contact"
+        description={settings}
+        active={path === settings}
+      />
     </Link>
   </div>
 );

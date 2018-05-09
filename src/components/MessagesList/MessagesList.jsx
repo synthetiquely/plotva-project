@@ -2,7 +2,11 @@ import React from 'react';
 import { Message } from '../Message/Message';
 import './messagesList.css';
 
-export const MessagesList = ({ messages, selectedMessage, handleSelectMessage }) => (
+export const MessagesList = ({
+  messages,
+  selectedMessage,
+  handleSelectMessage,
+}) => (
   <div className="messages-list">
     {messages.map(message => (
       <Message

@@ -32,9 +32,17 @@ export const Contact = props => {
   return (
     <div
       onClick={onClick}
-      className={`contact contact_${size} ${contentType === 'room' && !isRead ? 'contact_not-read' : ''}`}
+      className={`contact contact_${size} ${
+        contentType === 'room' && !isRead ? 'contact_not-read' : ''
+      }`}
     >
-      <Avatar avatar={avatar} size={size} checked={checked} defaultName={defaultName} color={color} />
+      <Avatar
+        avatar={avatar}
+        size={size}
+        checked={checked}
+        defaultName={defaultName}
+        color={color}
+      />
       <div className="contact__content">
         <div className="content__header">
           <div className="content__name">{userName}</div>
@@ -57,7 +65,9 @@ export const Contact = props => {
           {content ? (
             <div
               className={
-                contentType === 'в сети' ? 'content__text_online' : `content__text content__text_${contentType} `
+                contentType === 'в сети'
+                  ? 'content__text_online'
+                  : `content__text content__text_${contentType} `
               }
             >
               {content}

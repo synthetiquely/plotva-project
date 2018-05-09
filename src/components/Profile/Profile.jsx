@@ -7,7 +7,11 @@ import { Spinner } from '../Spinner/Spinner';
 import { Error } from '../Error/Error';
 import { Icon } from '../Icon/Icon';
 import { UPDATE_USER_ERROR } from '../../errorCodes';
-import { updateAvatar, updateProfile, logout } from '../../store/actions/userActions';
+import {
+  updateAvatar,
+  updateProfile,
+  logout,
+} from '../../store/actions/userActions';
 import defaultAvatar from './images/default_avatar.jpg';
 
 import './Profile.css';
@@ -86,7 +90,10 @@ class ProfileComponent extends Component {
           <button onClick={this.handleLogout} className="profile-info_logout">
             <Icon type="logout" />
           </button>
-          <ProfileAvatar image={user.img ? user.img : defaultAvatar} changeAvatar={this.handleChangeAvatar} />
+          <ProfileAvatar
+            image={user.img ? user.img : defaultAvatar}
+            changeAvatar={this.handleChangeAvatar}
+          />
           <div className="profile-info_wrapper">
             <button className="profile-info_edit" onClick={this.toggleEdit}>
               {this.state.edit ? 'Отменить изменения' : 'Редактировать'}
@@ -97,17 +104,23 @@ class ProfileComponent extends Component {
               <p className="profile-info_name">{user.name}</p>
               <p className="profile-info_status">в сети</p>
               <p className="profile-info_email">
-                <span className="profile-info_label">Электронный адрес:</span> {user.email}
+                <span className="profile-info_label">Электронный адрес:</span>{' '}
+                {user.email}
               </p>
               <p className="profile-info_phone">
-                <span className="profile-info_label">Номер телефона:</span> {user.phone}
+                <span className="profile-info_label">Номер телефона:</span>{' '}
+                {user.phone}
               </p>
             </div>
           )}
         </div>
 
         {this.state.edit && (
-          <ProfileEdit user={user} changeProfileData={this.handleChangeProfile} toggleEdit={this.toggleEdit} />
+          <ProfileEdit
+            user={user}
+            changeProfileData={this.handleChangeProfile}
+            toggleEdit={this.toggleEdit}
+          />
         )}
 
         {isLoading && <Spinner />}
@@ -122,4 +135,8 @@ const stateToProps = state => ({
   user: state.user.user,
 });
 
-export const Profile = connect(stateToProps, { updateAvatar, updateProfile, logout })(ProfileComponent);
+export const Profile = connect(stateToProps, {
+  updateAvatar,
+  updateProfile,
+  logout,
+})(ProfileComponent);

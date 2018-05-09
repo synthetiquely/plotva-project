@@ -30,7 +30,9 @@ export class ConversationPageComponent extends Component {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    const room = nextProps.rooms.find(room => room._id === nextProps.match.params.id);
+    const room = nextProps.rooms.find(
+      room => room._id === nextProps.match.params.id,
+    );
     if (room) {
       return {
         title: room.userName,
@@ -46,7 +48,13 @@ export class ConversationPageComponent extends Component {
     const { title, subtitle } = this.state;
     return (
       <Layout
-        header={<Header type="dialog" title={title || 'Загружаем...'} subtitle={subtitle || 'Загружаем...'} />}
+        header={
+          <Header
+            type="dialog"
+            title={title || 'Загружаем...'}
+            subtitle={subtitle || 'Загружаем...'}
+          />
+        }
         content={<Chat />}
         footer={<ChatForm />}
       />
@@ -58,4 +66,6 @@ const stateToProps = state => ({
   rooms: state.rooms.rooms,
 });
 
-export const ConversationPage = connect(stateToProps)(ConversationPageComponent);
+export const ConversationPage = connect(stateToProps)(
+  ConversationPageComponent,
+);

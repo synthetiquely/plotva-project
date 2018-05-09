@@ -26,7 +26,13 @@ export class ProfileEdit extends Component {
     const { user } = this.props;
     return (
       <form className="profile-edit" onSubmit={this.onSubmit}>
-        <InputGroup type="text" name="name" onInputChange={this.onInputChange} value={user.name} label="Ваше имя" />
+        <InputGroup
+          type="text"
+          name="name"
+          onInputChange={this.onInputChange}
+          value={user.name}
+          label="Ваше имя"
+        />
         <InputGroup
           type="email"
           name="email"

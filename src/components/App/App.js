@@ -15,9 +15,17 @@ export class App extends Component {
         <Route exact path="/" component={AuthenticationPage} />
         <Route exact path="/profile" component={PrivateRoute(ProfilePage)} />
         <Route exact path="/chats" component={PrivateRoute(ChatsPage)} />
-        <Route exact path="/chat/:id" component={PrivateRoute(ConversationPage)} />
+        <Route
+          exact
+          path="/chat/:id"
+          component={PrivateRoute(ConversationPage)}
+        />
         <Route exact path="/contacts" component={PrivateRoute(ContactsPage)} />
-        <Route exact path="/create_chat" component={PrivateRoute(CreateGroupChatPage)} />
+        <Route
+          exact
+          path="/create_chat"
+          component={PrivateRoute(CreateGroupChatPage)}
+        />
       </Switch>
     );
   }
