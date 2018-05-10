@@ -84,17 +84,19 @@ export const readMessages = roomId => async (dispatch, getState) => {
 export const fetchLastMessage = roomId => async (dispatch, getState) => {
   const currentUserId = getState().user.user._id;
   const response = await api.getRoomLastMessage(roomId);
-  const messages = [
-    {
-      id: response[0]._id,
-      text: response[0].message,
-      time: response[0].created_at,
-      isMy: currentUserId === response[0].userId,
-      userId: response[0].userId,
-      isRead: response[0].isRead,
-    },
-  ];
-  dispatch(setMessages({ roomId, messages, next: null }));
+  if (response.length) {
+    const messages = [
+      {
+        id: response[0]._id,
+        text: response[0].message,
+        time: response[0].created_at,
+        isMy: currentUserId === response[0].userId,
+        userId: response[0].userId,
+        isRead: response[0].isRead,
+      },
+    ];
+    dispatch(setMessages({ roomId, messages, next: null }));
+  }
 };
 
 export const fetchMessages = roomId => async (dispatch, getState) => {

@@ -27,18 +27,31 @@ export class ChatsComponent extends PureComponent {
     const { rooms, messages } = nextProps;
     if (rooms && rooms.length) {
       const transformedRooms = rooms.map(room => {
+        console.log('rooms', room);
         const lastMessage =
           messages[room._id] &&
           messages[room._id].messages &&
           messages[room._id].messages[messages[room._id].messages.length - 1];
-        return {
-          _id: room._id,
-          userName: room.userName,
-          content: (lastMessage && lastMessage.text) || 'Нет сообщений',
-          contentType: 'room',
-          isRead: lastMessage.isMy ? true : lastMessage.isRead,
-          avatar: room.avatar,
-        };
+
+        if (lastMessage) {
+          return {
+            _id: room._id,
+            userName: room.userName,
+            content: (lastMessage && lastMessage.text) || 'Нет сообщений',
+            contentType: 'room',
+            isRead: lastMessage.isMy ? true : lastMessage.isRead,
+            avatar: room.avatar,
+          };
+        } else {
+          return {
+            _id: room._id,
+            userName: room.userName,
+            content: 'Нет сообщений',
+            contentType: 'room',
+            isRead: true,
+            avatar: room.avatar,
+          };
+        }
       });
 
       return {

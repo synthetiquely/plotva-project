@@ -37,6 +37,7 @@ class ChatComponent extends PureComponent {
       this.onScrollToBottom();
     } else if (
       messages[prevProps.match.params.id].messages.length <
+        this.props.messages[this.props.match.params.id].messages &&
       this.props.messages[this.props.match.params.id].messages.length
     ) {
       this.onScrollToBottom();
