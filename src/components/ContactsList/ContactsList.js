@@ -73,6 +73,10 @@ class ContactsListComponent extends Component {
               props.link = `/chat/${contact._id}`;
             }
             if (contact.userName.toLowerCase().indexOf(search) + 1 > 0) {
+              if (createChat && contact._id === user._id) {
+                return null;
+              }
+
               return (
                 <Contact
                   key={index}

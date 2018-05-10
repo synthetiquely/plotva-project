@@ -29,7 +29,13 @@ export class ChatInputComponent extends Component {
     const { chatName } = this.state;
     return (
       <form onSubmit={this.handleSubmit} className="search-input">
-        <Icon className="search-input__icon" type="header-add" />
+        <button
+          className="no-button-button"
+          type="submit"
+          onClick={this.handleSubmit}
+        >
+          <Icon className="search-input__icon" type="header-add" />
+        </button>
         <input
           className="search"
           type="text"

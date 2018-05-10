@@ -49,7 +49,6 @@ class ContactsComponent extends PureComponent {
         isLoading: false,
       });
     } catch (err) {
-      console.error(err);
       this.setState({ error: err, isLoading: false });
     }
   }

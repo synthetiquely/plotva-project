@@ -3,7 +3,7 @@ import { Layout } from '../Layout/Layout';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
 import { ChatInput } from '../ChatInput/ChatInput';
-import { ContactsList } from '../ContactsList/ContactsList';
+import { Contacts } from '../Contacts/Contacts';
 
 export const CreateGroupChatPage = () => (
   <Layout
@@ -11,7 +11,7 @@ export const CreateGroupChatPage = () => (
     content={
       <React.Fragment>
         <ChatInput />
-        <ContactsList createChat />
+        <Contacts createChat />
       </React.Fragment>
     }
     footer={<Footer path="Чаты" />}

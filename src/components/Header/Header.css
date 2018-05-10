@@ -57,3 +57,7 @@
 .copy-to-clipboard:focus {
   border: 1px solid #edf9f3;
 }
+
+.notification-bar.notification-bar-active {
+  bottom: 80px !important;
+}

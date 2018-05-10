@@ -7,6 +7,7 @@ import { ConversationPage } from '../ConversationPage/ConversationPage';
 import { ContactsPage } from '../ContactsPage/ContactsPage';
 import { CreateGroupChatPage } from '../CreateGroupChatPage/CreateGroupChatPage';
 import { ProfilePage } from '../ProfilePage/ProfilePage';
+import { NotFoundPage } from '../NotFoundPage/NotFoundPage';
 
 export class App extends Component {
   render() {
@@ -26,6 +27,7 @@ export class App extends Component {
           path="/create_chat"
           component={PrivateRoute(CreateGroupChatPage)}
         />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
     );
   }

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Notification } from 'react-notification';
-
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { Link, withRouter } from 'react-router-dom';
 import { Icon } from '../Icon/Icon';
@@ -18,6 +17,7 @@ import { connect } from 'react-redux';
 class HeaderComponent extends Component {
   state = {
     isActive: false,
+    error: null,
   };
 
   newChat = async () => {
@@ -29,6 +29,7 @@ class HeaderComponent extends Component {
         await this.createRoomWithUsers(
           this.props.newRoomChatName,
           selectedUsers,
+          user,
         );
 
         const users = [].concat(this.props.users);
@@ -40,19 +41,33 @@ class HeaderComponent extends Component {
         this.props.dispatch(setNewRoomName(''));
       }
     } catch (err) {
-      this.setState({ error: 'Произошла ошибка.' });
+      this.setState({
+        error:
+          'Произошла неизвестная ошибка. Попробуйте перезагрузить страницу.',
+      });
     }
   };
 
-  createRoomWithUsers = async (name, users) => {
+  createRoomWithUsers = async (name, users, currentUser) => {
     try {
-      const room = await api.createRoom({ name });
-      await Promise.all(
-        users.map(user => this.joinUserToRoom(user._id, room._id)),
-      );
-      this.props.dispatch(createRoom(room));
+      if (users.length <= 2) {
+        throw new Error('Выделите более двух контактов');
+      } else {
+        const room = await api.createRoom({ name });
+        await Promise.all(
+          users.map(user => this.joinUserToRoom(user._id, room._id)),
+        );
+        const usersToAppend = users
+          .filter(user => user._id !== currentUser._id)
+          .map(user => user._id);
+        room.users.push(...usersToAppend);
+
+        this.props.dispatch(createRoom(room));
+      }
     } catch (err) {
-      this.setState({ error: 'Произошла при создании комнаты.' });
+      this.setState({
+        error: 'Выделите более двух контактов',
+      });
     }
   };
 
@@ -60,7 +75,9 @@ class HeaderComponent extends Component {
     try {
       await api.userJoinRoom(userId, roomId);
     } catch (err) {
-      this.setState({ error: 'Произошла ошибка при создании комнаты.' });
+      this.setState({
+        error: 'Произошла ошибка при добавлении пользователя в комнату.',
+      });
     }
   };
 
@@ -73,7 +90,7 @@ class HeaderComponent extends Component {
   };
 
   render() {
-    const { isActive } = this.state;
+    const { isActive, error } = this.state;
     let {
       title,
       subtitle,
@@ -95,19 +112,17 @@ class HeaderComponent extends Component {
             />
           )}
         </div>
-
         {title && (
           <div className="header__center">
             <HeaderTitle title={title} subtitle={subtitle} />
           </div>
         )}
-
         <div className="header__right">
           {type === 'contacts' &&
             (this.props.createChat ? (
               <Icon type="header-add" onClick={this.newChat} />
             ) : (
-              <Link to="/search">
+              <Link to="/create_chat">
                 <Icon type="header-add" />
               </Link>
             ))}
@@ -145,7 +160,14 @@ class HeaderComponent extends Component {
               </div>
             )}
         </div>
-
+        {error && (
+          <Notification
+            isActive={error}
+            message={error}
+            dismissAfter={2000}
+            onDismiss={() => this.setState({ error: null })}
+          />
+        )}
         <Notification
           isActive={isActive}
           message={'Скопировано!'}
