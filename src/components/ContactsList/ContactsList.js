@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Contact } from '../Contact/Contact';
 import { SectionTitle } from '../SectionTitle/SectionTitle';
 import { Error } from '../Error/Error';
 import { FETCH_CONTACTS_ERROR } from '../../errorCodes';
+import { createRoom } from '../../store/actions/roomsActions';
 import api from '../../api';
 
 import './ContactsList.css';
@@ -17,12 +19,13 @@ class ContactsListComponent extends Component {
   }
 
   getChatId = contact => async e => {
+    console.log('contact', contact);
     const currentUserId = this.props.user._id;
     const roomMembers = [currentUserId, contact._id].sort().toString();
     try {
       const rooms = await api.getRooms({ name: roomMembers });
       if (!rooms.count) {
-        this.createRoomWithUser(roomMembers, contact._id);
+        this.createRoomWithUser(roomMembers, contact._id, currentUserId);
       } else {
         this.props.history.push(`/chat/${rooms.items[0]._id}`);
       }
@@ -31,11 +34,15 @@ class ContactsListComponent extends Component {
     }
   };
 
-  createRoomWithUser = async (name, userId) => {
+  createRoomWithUser = async (name, userId, currentUserId) => {
     try {
       const room = await api.createRoom({ name });
-      this.props.history.push(`/chat/${room._id}`);
       await this.joinUserToRoom(userId, room._id);
+      if (currentUserId !== userId) {
+        room.users.push(userId);
+      }
+      this.props.createRoom(room);
+      this.props.history.push(`/chat/${room._id}`);
     } catch (err) {
       this.setState({ error: 'Произошла при создании комнаты.' });
     }
@@ -84,4 +91,6 @@ class ContactsListComponent extends Component {
   }
 }
 
-export const ContactsList = withRouter(ContactsListComponent);
+export const ContactsList = withRouter(
+  connect(null, { createRoom })(ContactsListComponent),
+);

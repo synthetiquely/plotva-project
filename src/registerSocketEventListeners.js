@@ -51,7 +51,9 @@ export const registerSocketEventListeners = async store => {
     );
   });
 
-  await api.onUserJoinedRoom(result => {});
+  await api.onUserJoinedRoom(result => {
+    console.log('result', result);
+  });
 
   await api.onUserChangeStatus(result => {
     store.dispatch(changeOnlineStatusInRooms(result.userId, result.status));

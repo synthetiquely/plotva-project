@@ -12,6 +12,8 @@ export class ConversationPageComponent extends Component {
     this.state = {
       title: '',
       subtitle: '',
+      avatar: '',
+      personalChat: false,
     };
   }
 
@@ -34,10 +36,22 @@ export class ConversationPageComponent extends Component {
       room => room._id === nextProps.match.params.id,
     );
     if (room) {
-      return {
-        title: room.userName,
-        subtitle: room.status,
-      };
+      if (room.users && room.users.length >= 2) {
+        return {
+          title: room.userName,
+          subtitle: room.status,
+          avatar: room.avatar,
+        };
+      } else if (room.users && room.users.length === 1) {
+        return {
+          title: room.userName,
+          subtitle: room.status,
+          avatar: room.avatar,
+          personalChat: true,
+        };
+      } else {
+        return null;
+      }
     }
     return null;
   }
@@ -45,7 +59,7 @@ export class ConversationPageComponent extends Component {
   async getOnlineStatus() {}
 
   render() {
-    const { title, subtitle } = this.state;
+    const { personalChat, title, subtitle, avatar } = this.state;
     return (
       <Layout
         header={
@@ -53,9 +67,10 @@ export class ConversationPageComponent extends Component {
             type="dialog"
             title={title || 'Загружаем...'}
             subtitle={subtitle || 'Загружаем...'}
+            avatar={avatar}
           />
         }
-        content={<Chat />}
+        content={<Chat personalChat={personalChat} />}
         footer={<ChatForm />}
       />
     );

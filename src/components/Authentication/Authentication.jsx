@@ -81,7 +81,7 @@ export class AuthenticationComponent extends Component {
     return (
       <React.Fragment>
         {showSignin ? (
-          <div>
+          <div className="form">
             <SigninForm handleSubmit={this.handleSignin} />
             <div className="toggle-form-link form-wrapper">
               <p>Нет учетной записи?</p>
@@ -89,7 +89,7 @@ export class AuthenticationComponent extends Component {
             </div>
           </div>
         ) : (
-          <div>
+          <div className="form">
             <SignupForm handleSubmit={this.handleSignup} />
             <div className="toggle-form-link form-wrapper">
               <p>Уже есть аккаунт?</p>

@@ -1,8 +1,19 @@
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .message-wrapper {
   margin: 0 -8px;
   display: flex;
   padding: 6px 56px 6px 14px;
   cursor: pointer;
+  animation: fade 0.5s;
 }
 
 .message-wrapper_my {
@@ -10,16 +21,19 @@
   flex-direction: row-reverse;
   padding: 6px 14px 6px 56px;
   cursor: pointer;
+  animation: fade 0.5s;
 }
 
 .message-wrapper_highlighted {
   background-color: #edf9f3;
   cursor: pointer;
+  animation: fade 0.5s;
 }
 
 .message-wrapper_my_highlighted {
   background-color: #edf9f3;
   cursor: pointer;
+  animation: fade 0.5s;
 }
 
 .message {

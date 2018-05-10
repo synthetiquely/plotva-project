@@ -32,15 +32,18 @@ class ChatComponent extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { messages, match } = prevProps;
-    if (match.params.id !== this.props.match.params.id) {
+    const { messages } = this.props.messages;
+    const { id } = this.props.match.params;
+    if (prevProps.match.params.id !== id) {
       this.onScrollToBottom();
-    } else if (
-      messages[prevProps.match.params.id].messages.length <
-        this.props.messages[this.props.match.params.id].messages &&
-      this.props.messages[this.props.match.params.id].messages.length
-    ) {
-      this.onScrollToBottom();
+    } else if (messages && messages[id] && messages[id].length) {
+      if (
+        prevProps.messages[prevProps.match.params.id].messages.length <
+          messages[id].messages &&
+        messages[id].messages.length
+      ) {
+        this.onScrollToBottom();
+      }
     }
   }
 
@@ -50,9 +53,16 @@ class ChatComponent extends PureComponent {
       messages[match.params.id] &&
       messages[match.params.id].messages.length
     ) {
-      const notReadMessages = messages[match.params.id].messages.filter(
-        message => !message.isRead && !message.isMy,
-      );
+      let notReadMessages = [];
+      if (nextProps.personalChat) {
+        notReadMessages = messages[match.params.id].messages.filter(message => {
+          return !message.isRead;
+        });
+      } else {
+        notReadMessages = messages[match.params.id].messages.filter(
+          message => !message.isRead && !message.isMy,
+        );
+      }
 
       if (notReadMessages.length) {
         nextProps.readMessages(match.params.id);

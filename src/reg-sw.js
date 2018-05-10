@@ -1,5 +1,3 @@
-'use strict';
-
 function regSw() {
   const applicationServerPublicKey =
     'BMHNptnTN5tE7s6qv6rMjyGY-mI2e0lkv3DT2Vc' +

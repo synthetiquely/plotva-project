@@ -20,14 +20,18 @@ export class ChatsComponent extends PureComponent {
   }
 
   componentDidMount() {
-    this.fetchNext();
+    const { rooms } = this.props;
+    if (rooms && rooms.length) {
+      return;
+    } else {
+      this.fetchNext();
+    }
   }
 
   static getDerivedStateFromProps(nextProps) {
     const { rooms, messages } = nextProps;
     if (rooms && rooms.length) {
       const transformedRooms = rooms.map(room => {
-        console.log('rooms', room);
         const lastMessage =
           messages[room._id] &&
           messages[room._id].messages &&
@@ -72,6 +76,7 @@ export class ChatsComponent extends PureComponent {
         isLoading: false,
       });
     } catch (error) {
+      console.log('error', error);
       this.setState({
         error,
         isLoading: false,

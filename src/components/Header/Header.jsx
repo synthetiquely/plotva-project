@@ -11,7 +11,7 @@ import { Avatar } from '../Avatar/Avatar';
 import './Header.css';
 import api from '../../api';
 import { setSelectedUsers, setUsers } from '../../store/actions/userActions';
-import { setNewRoomName } from '../../store/actions/roomsActions';
+import { setNewRoomName, createRoom } from '../../store/actions/roomsActions';
 
 import { connect } from 'react-redux';
 
@@ -50,6 +50,7 @@ class HeaderComponent extends Component {
       await Promise.all(
         users.map(user => this.joinUserToRoom(user._id, room._id)),
       );
+      this.props.dispatch(createRoom(room));
     } catch (err) {
       this.setState({ error: 'Произошла при создании комнаты.' });
     }
@@ -73,7 +74,13 @@ class HeaderComponent extends Component {
 
   render() {
     const { isActive } = this.state;
-    let { title, subtitle, selectedMessage, type = 'chats' } = this.props;
+    let {
+      title,
+      subtitle,
+      avatar,
+      selectedMessage,
+      type = 'chats',
+    } = this.props;
     let size = subtitle ? 'lg' : 'sm';
 
     return (
@@ -116,7 +123,7 @@ class HeaderComponent extends Component {
           )}
           {type === 'dialog' &&
             !selectedMessage && (
-              <Avatar color="4" defaultName="C" size="xsmall" />
+              <Avatar avatar={avatar} color="4" defaultName="C" size="xsmall" />
             )}
           {type === 'dialog' &&
             selectedMessage && (
@@ -129,7 +136,12 @@ class HeaderComponent extends Component {
                     <Icon type="copy" />
                   </button>
                 </CopyToClipboard>
-                <Avatar color="4" defaultName="C" size="xsmall" />
+                <Avatar
+                  avatar={avatar}
+                  color="4"
+                  defaultName="C"
+                  size="xsmall"
+                />
               </div>
             )}
         </div>

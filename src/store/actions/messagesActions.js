@@ -47,9 +47,7 @@ export const readMessages = roomId => async (dispatch, getState) => {
   const room = getState().messages[roomId];
   const currentUserId = getState().user.user._id;
   if (room) {
-    const notReadMessages = room.messages.filter(
-      message => !message.isRead && !message.isMy,
-    );
+    const notReadMessages = room.messages.filter(message => !message.isRead);
     if (notReadMessages.length) {
       const updatedMessages = await Promise.all(
         notReadMessages.map(async notReadMessages => {

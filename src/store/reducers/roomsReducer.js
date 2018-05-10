@@ -1,4 +1,8 @@
-import { ROOMS_SET, NEW_ROOM_NAME_SET } from '../actions/actionTypes';
+import {
+  ROOMS_SET,
+  NEW_ROOM_NAME_SET,
+  ROOM_APPENDED,
+} from '../actions/actionTypes';
 
 const defaultState = {
   next: null,
@@ -8,6 +12,11 @@ const defaultState = {
 
 export const roomsReducer = (state = defaultState, action) => {
   switch (action.type) {
+    case ROOM_APPENDED:
+      return {
+        ...state,
+        rooms: [...state.rooms, action.payload],
+      };
     case ROOMS_SET:
       return {
         ...state,

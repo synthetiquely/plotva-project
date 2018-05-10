@@ -1,9 +1,22 @@
+@keyframes flyin {
+  from {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .contact {
   display: flex;
   align-items: center;
   position: relative;
   margin: 0 -8px;
   padding: 7px 10px 7px 10px;
+  animation: flyin 0.25s;
 }
 
 .contact_not-read {

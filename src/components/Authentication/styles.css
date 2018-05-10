@@ -1,3 +1,19 @@
+@keyframes flyin {
+  from {
+    transform: translateY(300px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.form {
+  animation: flyin 0.5s;
+}
+
 .form-wrapper {
   text-align: center;
 }
