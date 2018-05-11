@@ -8,12 +8,9 @@ import { store } from './store/store';
 
 import { App } from './components/App/App';
 
-import { registerSocketEventListeners } from './registerSocketEventListeners';
 import regSw from './reg-sw';
 
 import './index.css';
-
-registerSocketEventListeners(store);
 
 ReactDOM.render(
   <BrowserRouter>
@@ -23,5 +20,5 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root'),
 );
+
 regSw();
- 

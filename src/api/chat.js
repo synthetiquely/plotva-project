@@ -2,11 +2,11 @@ import io from 'socket.io-client';
 import { store } from '../store/store';
 import { decodeTokenAndSetUser } from '../store/actions/userActions';
 import * as MESSAGES from '../server/messages';
+import { registerSocketEventListeners } from '../registerSocketEventListeners';
 
 class Api {
   constructor() {
     this.uniqueId = 0;
-    this._setupSocket();
     this.auth();
   }
 
@@ -16,6 +16,8 @@ class Api {
       .then(res => {
         if (res.token) {
           store.dispatch(decodeTokenAndSetUser(res.token));
+          this._setupSocket();
+          registerSocketEventListeners(store);
         }
       })
       .catch(err => {

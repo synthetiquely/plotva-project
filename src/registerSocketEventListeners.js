@@ -7,8 +7,8 @@ import {
 import { changeOnlineStatusInRooms } from './store/actions/roomsActions';
 import { transformMessages } from './utils/transormations';
 
-export const registerSocketEventListeners = async store => {
-  await chatApi.onMessage(result => {
+export const registerSocketEventListeners = store => {
+  chatApi.onMessage(result => {
     const currentUserId = store.getState().user.user._id;
     const message = [transformMessages(result, currentUserId)];
 
@@ -29,11 +29,11 @@ export const registerSocketEventListeners = async store => {
     );
   });
 
-  await chatApi.onDeleteMessage(result => {
+  chatApi.onDeleteMessage(result => {
     store.dispatch(deleteMessage(result));
   });
 
-  await chatApi.onReadMessage(result => {
+  chatApi.onReadMessage(result => {
     const currentUserId = store.getState().user.user._id;
     const message = transformMessages(result, currentUserId);
 
@@ -45,7 +45,7 @@ export const registerSocketEventListeners = async store => {
     );
   });
 
-  await chatApi.onUserChangeStatus(result => {
+  chatApi.onUserChangeStatus(result => {
     store.dispatch(changeOnlineStatusInRooms(result.userId, result.status));
   });
 };
