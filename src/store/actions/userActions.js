@@ -1,7 +1,8 @@
 import jwtDecode from 'jwt-decode';
 import * as userApi from '../../api/user';
-import api from '../../api';
+import chatApi from '../../api/chat';
 import { SET_USER, SET_USERS, SET_SELECTED } from './actionTypes';
+import { transformUsers } from '../../utils/transormations';
 
 export const setUser = user => ({
   type: SET_USER,
@@ -32,7 +33,6 @@ export const decodeTokenAndSetUser = token => {
 
 export const updateAvatar = avatar => async dispatch => {
   const res = await userApi.updateAvatar(avatar);
-
   if (res.token) {
     dispatch(decodeTokenAndSetUser(res.token));
   }
@@ -40,7 +40,6 @@ export const updateAvatar = avatar => async dispatch => {
 
 export const updateProfile = userData => async dispatch => {
   const res = await userApi.updateProfile(userData);
-
   if (res.token) {
     dispatch(decodeTokenAndSetUser(res.token));
   }
@@ -53,20 +52,7 @@ export const logout = () => async dispatch => {
 
 export const fetchUsers = () => async (dispatch, getState) => {
   const next = getState().user.next;
-
-  const res = await api.getUsers(next);
-
-  const users = res.items.map(user => {
-    const status = user.online ? 'в сети' : 'не в сети';
-    return {
-      _id: user._id,
-      userName: user.name ? user.name : 'Аноним',
-      avatar: user.img,
-      size: 'small',
-      content: status,
-      contentType: status,
-    };
-  });
-
+  const res = await chatApi.getUsers(next);
+  const users = transformUsers(res.items);
   dispatch(setUsers(users, res.next));
 };

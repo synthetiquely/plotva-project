@@ -80,3 +80,9 @@
   height: 22px;
   background-image: url(./img/copy.svg);
 }
+
+.icon_remove {
+  width: 22px;
+  height: 22px;
+  background-image: url(./img/remove.svg);
+}

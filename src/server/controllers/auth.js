@@ -4,15 +4,12 @@ const {
   createUser,
   validatePassword,
 } = require('../database/user');
+const { apendCookies } = require('../utils/cookies/apendCookies');
 const uuid = require('uuid/v4');
 
 const cookie = async (req, res) => {
   if (!req.cookies.sid) {
-    res.cookie('sid', uuid(), {
-      httpOnly: true,
-      path: '/',
-      maxAge: 24 * 7 * 3600000, // 1 week
-    });
+    apendCookies(res, 'sid', uuid());
   }
 
   const { token } = req.cookies;
@@ -53,11 +50,8 @@ const signin = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      path: '/',
-      maxAge: 24 * 7 * 3600000, // 1 week
-    });
+    apendCookies(res, 'token', token);
+
     res.json({ token });
   } else {
     return res.status(401).json({ error: 'Неверный email или пароль.' });
@@ -84,11 +78,7 @@ const signup = async (req, res) => {
   if (newUser) {
     const token = generateToken(newUser);
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      path: '/',
-      maxAge: 24 * 7 * 3600000, // 1 week
-    });
+    apendCookies(res, 'token', token);
     res.json({ token });
   } else {
     return res.status(500).json({

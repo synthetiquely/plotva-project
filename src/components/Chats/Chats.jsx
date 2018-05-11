@@ -20,11 +20,13 @@ export class ChatsComponent extends PureComponent {
   }
 
   componentDidMount() {
-    const { rooms } = this.props;
-    if (rooms && rooms.length) {
-      return;
-    } else {
-      this.fetchNext();
+    if (this.props.currentUser) {
+      const { rooms } = this.props;
+      if (rooms && rooms.length) {
+        return;
+      } else {
+        this.fetchNext();
+      }
     }
   }
 
@@ -110,6 +112,7 @@ export class ChatsComponent extends PureComponent {
 const mapStateToProps = state => ({
   rooms: state.rooms.rooms,
   messages: state.messages,
+  currentUser: state.user.user,
 });
 
 export const Chats = connect(mapStateToProps, { fetchRooms })(ChatsComponent);

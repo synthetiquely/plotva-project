@@ -9,6 +9,7 @@ const {
 const {
   getMessages,
   getLastMessage,
+  removeMessage,
   sendMessage,
   updateMessage,
 } = require('../database/messages');
@@ -22,10 +23,6 @@ const TYPES = require('../messages');
 module.exports = function(db, io) {
   const ONLINE = {};
 
-  /**
-   * @param {Pagination<User>} users
-   * @return {Pagination<User>}
-   */
   function fillUsersWithStatus(users) {
     users.items = users.items.map(user => ({
       ...user,
@@ -43,9 +40,6 @@ module.exports = function(db, io) {
     }
   }
 
-  /**
-   * Connection is created
-   */
   io.on('connection', async function(socket) {
     let { token } = socket.request.cookies;
     let isDisconnected = false;
@@ -54,7 +48,6 @@ module.exports = function(db, io) {
     socket.join('broadcast');
 
     if (token) {
-      // Load user information for next usage
       currentUser = await identifyUserByToken(db, token).catch(error => {
         throw new Error(`Cannot load user: ${error}`);
       });
@@ -63,18 +56,12 @@ module.exports = function(db, io) {
         ONLINE[currentUser._id] = true;
       }
       userChangeOnlineStatus(currentUser._id);
-      // Get of user groups
       let rooms = await getUserRooms(db, currentUser._id);
       rooms.items.forEach(room => {
         joinToRoomChannel(db, room._id);
       });
     }
 
-    /**
-     * Invoke callback and handle errors
-     *
-     * @param callback
-     */
     function wrapCallback(callback) {
       return function(...args) {
         let printErr = err => {
@@ -105,11 +92,6 @@ module.exports = function(db, io) {
       );
     }
 
-    /**
-     * Send notification to every user about status change
-     *
-     * @param {string} userId
-     */
     function userChangeOnlineStatus(userId) {
       return socket.broadcast.emit(TYPES.ONLINE, {
         status: ONLINE[userId],
@@ -117,49 +99,22 @@ module.exports = function(db, io) {
       });
     }
 
-    /**
-     * Join to socket channel, to broadcast messages inside Room
-     *
-     * @param {string} roomId
-     */
     function joinToRoomChannel(roomId) {
       socket.join('room:' + roomId);
     }
 
-    /**
-     * Leave socket channel
-     *
-     * @param {string} roomId
-     */
     function leaveRoomChannel(roomId) {
       socket.leave('room:' + roomId);
     }
 
-    /**
-     * Broadcast messages inside Room about user joined
-     *
-     * @param {string} userId
-     * @param {string} roomId
-     */
     function userWasJoinedToRoom({ userId, roomId }) {
       socket.to('room:' + roomId).emit(TYPES.USER_JOINED, { userId, roomId });
     }
 
-    /**
-     * Broadcast messages inside Room about user leave
-     *
-     * @param {string} userId
-     * @param {string} roomId
-     */
     function userLeaveRoom({ userId, roomId }) {
       socket.to('room:' + roomId).emit(TYPES.USER_LEAVED, { userId, roomId });
     }
 
-    /**
-     * New message coming to room
-     *
-     * @param {Message} message
-     */
     function newMessage(message) {
       socket.to('room:' + message.roomId).emit(TYPES.MESSAGE, message);
     }
@@ -168,34 +123,42 @@ module.exports = function(db, io) {
       socket.to('room:' + message.roomId).emit(TYPES.MESSAGE_READ, message);
     }
 
-    // Receive current user information
+    function deleteMessage({ roomId, messageId }) {
+      socket
+        .to('room:' + roomId)
+        .emit(TYPES.MESSAGES_DELETED, { roomId, messageId });
+    }
+
     requestResponse(TYPES.CURRENT_USER, () => currentUser);
 
-    // Return list of all users with
     requestResponse(TYPES.USERS, async params => {
       return fillUsersWithStatus(await getUsers(db, params || {}));
     });
 
-    // Create room
     requestResponse(TYPES.CREATE_ROOM, async params => {
       return createRoom(db, currentUser, params);
     });
 
-    // Create room
     requestResponse(TYPES.ROOMS, params => {
       return getRooms(db, params || {});
     });
 
-    // Rooms of current user
     requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
       if (currentUser._id) {
         return getUserRooms(db, currentUser._id, params);
       } else {
-        return null;
+        let { token } = socket.request.cookies;
+        if (token) {
+          const currentUser = await identifyUserByToken(db, token).catch(
+            error => {
+              throw new Error(`Cannot load user: ${error}`);
+            },
+          );
+          return getUserRooms(db, currentUser._id, params);
+        }
       }
     });
 
-    // Join current user to room
     requestResponse(TYPES.CURRENT_USER_JOIN_ROOM, async ({ roomId }) => {
       let payload = {
         roomId,
@@ -208,7 +171,6 @@ module.exports = function(db, io) {
       return joinRoom(db, payload);
     });
 
-    // Join user to room
     requestResponse(TYPES.USER_JOIN_ROOM, payload => {
       joinToRoomChannel(payload.roomId);
       userWasJoinedToRoom(payload);
@@ -216,7 +178,6 @@ module.exports = function(db, io) {
       return joinRoom(db, payload);
     });
 
-    // Leave current user to room
     requestResponse(TYPES.CURRENT_USER_LEAVE_ROOM, async ({ roomId }) => {
       let payload = {
         roomId,
@@ -229,7 +190,6 @@ module.exports = function(db, io) {
       return leaveRoom(db, payload);
     });
 
-    // Send message
     requestResponse(TYPES.SEND_MESSAGE, async payload => {
       let message = await sendMessage(db, {
         ...payload,
@@ -240,7 +200,12 @@ module.exports = function(db, io) {
       return message;
     });
 
-    // Send message
+    requestResponse(TYPES.DELETE_MESSAGE, async payload => {
+      const result = await removeMessage(db, payload);
+      deleteMessage(payload);
+      return result;
+    });
+
     requestResponse(TYPES.READ_MESSAGE, async payload => {
       if (payload.message.userId === currentUser._id) {
         return;
@@ -251,10 +216,8 @@ module.exports = function(db, io) {
       }
     });
 
-    // Get messages
     requestResponse(TYPES.MESSAGES, payload => getMessages(db, payload));
 
-    // Get last messages
     requestResponse(TYPES.GET_LAST_MESSAGE, payload =>
       getLastMessage(db, payload),
     );

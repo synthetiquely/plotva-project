@@ -45,16 +45,16 @@
   text-align: center;
 }
 
-.copy-to-clipboard {
+.button-icon {
   padding: 3px;
   border: none;
   background: transparent;
   outline: none;
 }
 
-.copy-to-clipboard:active,
-.copy-to-clipboard:hover,
-.copy-to-clipboard:focus {
+.button-icon:active,
+.button-icon:hover,
+.button-icon:focus {
   border: 1px solid #edf9f3;
 }
 

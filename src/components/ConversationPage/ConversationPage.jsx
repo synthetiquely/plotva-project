@@ -4,12 +4,13 @@ import { Layout } from '../Layout/Layout';
 import { Header } from '../Header/Header';
 import { Chat } from '../Chat/Chat';
 import { ChatForm } from '../ChatForm/ChatForm';
-import api from '../../api';
+import chatApi from '../../api/chat';
 
 export class ConversationPageComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      roomId: null,
       title: '',
       subtitle: '',
       avatar: '',
@@ -23,7 +24,7 @@ export class ConversationPageComponent extends Component {
 
   async joinRoom() {
     try {
-      await api.currentUserJoinRoom(this.props.match.params.id);
+      await chatApi.currentUserJoinRoom(this.props.match.params.id);
     } catch (error) {
       this.setState({
         error,
@@ -32,34 +33,39 @@ export class ConversationPageComponent extends Component {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    const room = nextProps.rooms.find(
-      room => room._id === nextProps.match.params.id,
-    );
-    if (room) {
-      if (room.users && room.users.length >= 2) {
-        return {
-          title: room.userName,
-          subtitle: room.status,
-          avatar: room.avatar,
-        };
-      } else if (room.users && room.users.length === 1) {
-        return {
-          title: room.userName,
-          subtitle: room.status,
-          avatar: room.avatar,
-          personalChat: true,
-        };
-      } else {
-        return null;
+    if (nextProps.rooms.length) {
+      const room = nextProps.rooms.find(
+        room => room._id === nextProps.match.params.id,
+      );
+      if (room) {
+        if (room.users && room.users.length >= 2) {
+          return {
+            roomId: room._id,
+            title: room.userName,
+            subtitle: room.status,
+            avatar: room.avatar,
+          };
+        } else if (room.users && room.users.length === 1) {
+          return {
+            roomId: room._id,
+            title: room.userName,
+            subtitle: room.status,
+            avatar: room.avatar,
+            personalChat: true,
+          };
+        } else {
+          return null;
+        }
       }
     }
+
     return null;
   }
 
   async getOnlineStatus() {}
 
   render() {
-    const { personalChat, title, subtitle, avatar } = this.state;
+    const { roomId, personalChat, title, subtitle, avatar } = this.state;
     return (
       <Layout
         header={
@@ -68,6 +74,7 @@ export class ConversationPageComponent extends Component {
             title={title || 'Загружаем...'}
             subtitle={subtitle || 'Загружаем...'}
             avatar={avatar}
+            roomId={roomId}
           />
         }
         content={<Chat personalChat={personalChat} />}

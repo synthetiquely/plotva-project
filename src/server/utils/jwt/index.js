@@ -15,19 +15,7 @@ const decodeToken = token => {
   return decoded;
 };
 
-const extractTokenFromHeader = header => {
-  let token;
-  if (header) {
-    token = header.split(' ')[1];
-  }
-  if (token) {
-    return token;
-  }
-  throw new Error('Токен отсутствует или неверный формат токена');
-};
-
 module.exports = {
-  extractTokenFromHeader,
   decodeToken,
   generateToken,
 };

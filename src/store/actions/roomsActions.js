@@ -1,6 +1,7 @@
 import { ROOMS_SET, NEW_ROOM_NAME_SET, ROOM_APPENDED } from './actionTypes';
 import { fetchLastMessage } from './messagesActions';
-import api from '../../api';
+import chatApi from '../../api/chat';
+import { transformRooms } from '../../utils/transormations';
 
 export const setRooms = payload => ({
   type: ROOMS_SET,
@@ -20,35 +21,9 @@ export const setNewRoomName = payload => ({
 export const createRoom = room => async (dispatch, getState) => {
   const user = getState().user;
   const currentUser = user && user.user;
-  let chatName = '';
-  let status = '';
-  let avatar = '';
   if (room) {
     dispatch(fetchLastMessage(room._id));
-    if (room.users.length > 2) {
-      chatName = room.name || 'Групповой чат';
-      status = `${room.users.length} участников`;
-    } else if (room.users.length === 2) {
-      const otherUserId =
-        room.users[0] === currentUser._id ? room.users[1] : room.users[0];
-      const otherUser = await api.getUser(otherUserId);
-      avatar = otherUser.img;
-      chatName = otherUser.name;
-      status = otherUser.online ? 'в сети' : 'не в сети';
-    } else if (room.users.length) {
-      avatar = currentUser ? currentUser.img : '';
-      chatName = 'Вы';
-      status = 'Сохраненные сообщения';
-    }
-
-    const roomToCreate = {
-      _id: room._id,
-      userName: chatName,
-      status,
-      avatar,
-      users: room.users,
-    };
-
+    const roomToCreate = await transformRooms(room, currentUser);
     dispatch(appendRoom(roomToCreate));
   }
 };
@@ -58,45 +33,21 @@ export const fetchRooms = () => async (dispatch, getState) => {
   const user = getState().user;
   const currentUser = user && user.user;
 
-  const res = await api.getCurrentUserRooms(next);
+  const res = await chatApi.getCurrentUserRooms(next);
   if (res.items && res.items.length) {
     const rooms = await Promise.all(
       res.items.map(async room => {
-        let chatName = '';
-        let status = '';
-        let avatar = '';
-
         if (room) {
-          await api.currentUserJoinRoom(room._id);
+          await chatApi.currentUserJoinRoom(room._id);
           dispatch(fetchLastMessage(room._id));
-          if (room.users.length > 2) {
-            chatName = room.name || 'Групповой чат';
-            status = `${room.users.length} участников`;
-          } else if (room.users.length === 2) {
-            const otherUserId =
-              room.users[0] === currentUser._id ? room.users[1] : room.users[0];
-            const otherUser = await api.getUser(otherUserId);
-            avatar = otherUser.img;
-            chatName = otherUser.name;
-            status = otherUser.online ? 'в сети' : 'не в сети';
-          } else if (room.users.length) {
-            avatar = currentUser ? currentUser.img : '';
-            chatName = 'Вы';
-            status = 'Сохраненные сообщения';
-          }
-
-          return {
-            _id: room._id,
-            userName: chatName,
-            status,
-            avatar,
-            users: room.users,
-          };
+          return await transformRooms(room, currentUser);
         }
       }),
     );
     dispatch(setRooms({ rooms, next }));
   }
+
+  return res;
 };
 
 export const changeOnlineStatusInRooms = (userId, status) => (

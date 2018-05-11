@@ -80,6 +80,11 @@ module.exports = {
   DELETE_MESSAGE: 'DELETE_MESSAGE',
 
   /**
+   * Message deleted
+   */
+  MESSAGES_DELETED: 'MESSAGES_DELETED',
+
+  /**
    * Show list of messages
    */
   MESSAGES: 'MESSAGES',

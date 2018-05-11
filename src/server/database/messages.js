@@ -65,6 +65,30 @@ async function updateMessage(db, { id }) {
   return insertOrUpdateEntity(db.collection(TABLE), messageEntity);
 }
 
+async function removeMessage(db, { messageId, userId }) {
+  if (!messageId) {
+    throw new Error('Message ID required');
+  }
+
+  const message = await db
+    .collection(TABLE)
+    .findOne({ _id: ObjectId(messageId.toString()) });
+
+  if (!message) {
+    throw new Error(`Cannot find message with id=${messageId}`);
+  }
+
+  console.log('USERID', userId);
+
+  if (message.userId.toString() === userId.toString()) {
+    return db
+      .collection(TABLE)
+      .deleteOne({ _id: ObjectId(messageId.toString()) });
+  } else {
+    throw new Error(`Cannot delete not your message `, userId);
+  }
+}
+
 async function getMessages(db, filter) {
   ['roomId', 'userId'].forEach(key => {
     if (filter[key]) {
@@ -92,6 +116,7 @@ async function getLastMessage(db, roomId) {
 module.exports = {
   sendMessage,
   updateMessage,
+  removeMessage,
   getMessages,
   getLastMessage,
 };

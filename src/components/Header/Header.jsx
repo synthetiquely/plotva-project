@@ -8,9 +8,10 @@ import { HeaderTitle } from '../HeaderTitle/HeaderTitle';
 import { HeaderBtn } from '../HeaderBtn/HeaderBtn';
 import { Avatar } from '../Avatar/Avatar';
 import './Header.css';
-import api from '../../api';
+import chatApi from '../../api/chat';
 import { setSelectedUsers, setUsers } from '../../store/actions/userActions';
 import { setNewRoomName, createRoom } from '../../store/actions/roomsActions';
+import { requestMessageRemoval } from '../../store/actions/messagesActions';
 
 import { connect } from 'react-redux';
 
@@ -23,7 +24,9 @@ class HeaderComponent extends Component {
   newChat = async () => {
     const { user, selectedUsers } = this.props;
     try {
-      const rooms = await api.getRooms({ name: this.props.newRoomChatName });
+      const rooms = await chatApi.getRooms({
+        name: this.props.newRoomChatName,
+      });
       if (!rooms.count) {
         selectedUsers.push(user);
         await this.createRoomWithUsers(
@@ -48,12 +51,24 @@ class HeaderComponent extends Component {
     }
   };
 
+  removeMessage = async () => {
+    try {
+      this.props.dispatch(
+        requestMessageRemoval(this.props.roomId, this.props.selectedMessage.id),
+      );
+    } catch (err) {
+      this.setState({
+        error: 'Произошла ошибка при попытке удалить сообщение.',
+      });
+    }
+  };
+
   createRoomWithUsers = async (name, users, currentUser) => {
     try {
       if (users.length <= 2) {
         throw new Error('Выделите более двух контактов');
       } else {
-        const room = await api.createRoom({ name });
+        const room = await chatApi.createRoom({ name });
         await Promise.all(
           users.map(user => this.joinUserToRoom(user._id, room._id)),
         );
@@ -63,6 +78,7 @@ class HeaderComponent extends Component {
         room.users.push(...usersToAppend);
 
         this.props.dispatch(createRoom(room));
+        this.props.history.push('/chats');
       }
     } catch (err) {
       this.setState({
@@ -73,7 +89,7 @@ class HeaderComponent extends Component {
 
   joinUserToRoom = async (userId, roomId) => {
     try {
-      await api.userJoinRoom(userId, roomId);
+      await chatApi.userJoinRoom(userId, roomId);
     } catch (err) {
       this.setState({
         error: 'Произошла ошибка при добавлении пользователя в комнату.',
@@ -147,10 +163,17 @@ class HeaderComponent extends Component {
                   text={selectedMessage.text}
                   onCopy={this.toggleNotification}
                 >
-                  <button className="copy-to-clipboard" title="Copy message">
+                  <button className="button-icon" title="Copy message">
                     <Icon type="copy" />
                   </button>
                 </CopyToClipboard>
+                <button
+                  onClick={this.removeMessage}
+                  className="button-icon"
+                  title="Remove message"
+                >
+                  <Icon type="remove" />
+                </button>
                 <Avatar
                   avatar={avatar}
                   color="4"

@@ -1,20 +1,16 @@
-import api from './api';
-import { appendMessages, updateMessage } from './store/actions/messagesActions';
+import chatApi from './api/chat';
+import {
+  appendMessages,
+  updateMessage,
+  deleteMessage,
+} from './store/actions/messagesActions';
 import { changeOnlineStatusInRooms } from './store/actions/roomsActions';
+import { transformMessages } from './utils/transormations';
 
 export const registerSocketEventListeners = async store => {
-  await api.onMessage(result => {
-    console.log('message to append', result);
-    const message = [
-      {
-        id: result._id,
-        text: result.message,
-        time: result.created_at,
-        isMy: store.getState().user.user._id === result.userId,
-        userId: result.userId,
-        isRead: result.isRead,
-      },
-    ];
+  await chatApi.onMessage(result => {
+    const currentUserId = store.getState().user.user._id;
+    const message = [transformMessages(result, currentUserId)];
 
     try {
       new Notification('New message', {
@@ -33,15 +29,13 @@ export const registerSocketEventListeners = async store => {
     );
   });
 
-  await api.onReadMessage(result => {
-    const message = {
-      id: result._id,
-      text: result.message,
-      time: result.created_at,
-      isMy: store.getState().user.user._id === result.userId,
-      userId: result.userId,
-      isRead: result.isRead,
-    };
+  await chatApi.onDeleteMessage(result => {
+    store.dispatch(deleteMessage(result));
+  });
+
+  await chatApi.onReadMessage(result => {
+    const currentUserId = store.getState().user.user._id;
+    const message = transformMessages(result, currentUserId);
 
     store.dispatch(
       updateMessage({
@@ -51,11 +45,7 @@ export const registerSocketEventListeners = async store => {
     );
   });
 
-  await api.onUserJoinedRoom(result => {
-    console.log('result', result);
-  });
-
-  await api.onUserChangeStatus(result => {
+  await chatApi.onUserChangeStatus(result => {
     store.dispatch(changeOnlineStatusInRooms(result.userId, result.status));
   });
 };

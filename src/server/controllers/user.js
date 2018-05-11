@@ -1,6 +1,7 @@
 const cloudinary = require('cloudinary');
 const { generateToken } = require('../utils/jwt');
 const { saveUser } = require('../database/user');
+const { apendCookies } = require('../utils/cookies/apendCookies');
 
 const updateProfile = (req, res) => {
   const user = req.currentUser;
@@ -11,11 +12,7 @@ const updateProfile = (req, res) => {
     };
     saveUser(req.db, userData).then(updatedUser => {
       const token = generateToken(updatedUser);
-      res.cookie('token', token, {
-        httpOnly: true,
-        path: '/',
-        maxAge: 24 * 7 * 3600000, // 1 week
-      });
+      apendCookies(res, 'token', token);
       res.json({ token });
     });
   } else {
@@ -35,11 +32,7 @@ const updateAvatar = (req, res) => {
           };
           saveUser(req.db, userData).then(updatedUser => {
             const token = generateToken(updatedUser);
-            res.cookie('token', token, {
-              httpOnly: true,
-              path: '/',
-              maxAge: 24 * 7 * 3600000, // 1 week
-            });
+            apendCookies(res, 'token', token);
             res.json({ token });
           });
         })

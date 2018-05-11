@@ -2,6 +2,7 @@ import {
   MESSAGES_SET,
   MESSAGES_APPENDED,
   MESSAGE_SELECTED,
+  MESSAGE_DELETED,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -47,6 +48,24 @@ export const messagesReducer = (state = initialState, action) => {
           next: null,
         },
       };
+    case MESSAGE_DELETED:
+      if (
+        state[action.payload.roomId] &&
+        state[action.payload.roomId].messages.length > 0
+      ) {
+        const filteredMessages = state[action.payload.roomId].messages.filter(
+          message => message.id !== action.payload.messageId,
+        );
+        return {
+          ...state,
+          [action.payload.roomId]: {
+            ...state[action.payload.roomId],
+            messages: filteredMessages,
+          },
+        };
+      } else {
+        return state;
+      }
     default:
       return state;
   }

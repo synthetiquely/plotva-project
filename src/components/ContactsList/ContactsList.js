@@ -6,7 +6,7 @@ import { SectionTitle } from '../SectionTitle/SectionTitle';
 import { Error } from '../Error/Error';
 import { FETCH_CONTACTS_ERROR } from '../../errorCodes';
 import { createRoom } from '../../store/actions/roomsActions';
-import api from '../../api';
+import chatApi from '../../api/chat';
 
 import './ContactsList.css';
 
@@ -23,7 +23,7 @@ class ContactsListComponent extends Component {
     const currentUserId = this.props.user._id;
     const roomMembers = [currentUserId, contact._id].sort().toString();
     try {
-      const rooms = await api.getRooms({ name: roomMembers });
+      const rooms = await chatApi.getRooms({ name: roomMembers });
       if (!rooms.count) {
         this.createRoomWithUser(roomMembers, contact._id, currentUserId);
       } else {
@@ -36,7 +36,7 @@ class ContactsListComponent extends Component {
 
   createRoomWithUser = async (name, userId, currentUserId) => {
     try {
-      const room = await api.createRoom({ name });
+      const room = await chatApi.createRoom({ name });
       await this.joinUserToRoom(userId, room._id);
       if (currentUserId !== userId) {
         room.users.push(userId);
@@ -50,7 +50,7 @@ class ContactsListComponent extends Component {
 
   joinUserToRoom = async (userId, roomId) => {
     try {
-      await api.userJoinRoom(userId, roomId);
+      await chatApi.userJoinRoom(userId, roomId);
     } catch (err) {
       this.setState({ error: 'Произошла ошибка при создании комнаты.' });
     }

@@ -2,8 +2,10 @@ import {
   MESSAGES_SET,
   MESSAGES_APPENDED,
   MESSAGE_SELECTED,
+  MESSAGE_DELETED,
 } from './actionTypes';
-import api from '../../api';
+import chatApi from '../../api/chat';
+import { transformMessages } from '../../utils/transormations';
 
 export const setMessages = payload => ({
   type: MESSAGES_SET,
@@ -17,6 +19,11 @@ export const appendMessages = payload => ({
 
 export const selectMessage = payload => ({
   type: MESSAGE_SELECTED,
+  payload,
+});
+
+export const deleteMessage = payload => ({
+  type: MESSAGE_DELETED,
   payload,
 });
 
@@ -51,20 +58,13 @@ export const readMessages = roomId => async (dispatch, getState) => {
     if (notReadMessages.length) {
       const updatedMessages = await Promise.all(
         notReadMessages.map(async notReadMessages => {
-          return await api.readMessage(roomId, notReadMessages);
+          return await chatApi.readMessage(roomId, notReadMessages);
         }),
       );
       const messagesToUpdate = room.messages.map(message => {
         for (let i = 0; i < updatedMessages.length; i++) {
           if (message.id === updatedMessages[i]._id) {
-            return {
-              id: updatedMessages[i]._id,
-              text: updatedMessages[i].message,
-              time: updatedMessages[i].created_at,
-              isMy: currentUserId === updatedMessages[i].userId,
-              userId: updatedMessages[i].userId,
-              isRead: updatedMessages[i].isRead,
-            };
+            return transformMessages(updatedMessages[i], currentUserId);
           }
         }
         return message;
@@ -81,18 +81,9 @@ export const readMessages = roomId => async (dispatch, getState) => {
 
 export const fetchLastMessage = roomId => async (dispatch, getState) => {
   const currentUserId = getState().user.user._id;
-  const response = await api.getRoomLastMessage(roomId);
+  const response = await chatApi.getRoomLastMessage(roomId);
   if (response.length) {
-    const messages = [
-      {
-        id: response[0]._id,
-        text: response[0].message,
-        time: response[0].created_at,
-        isMy: currentUserId === response[0].userId,
-        userId: response[0].userId,
-        isRead: response[0].isRead,
-      },
-    ];
+    const messages = [transformMessages(response[0], currentUserId)];
     dispatch(setMessages({ roomId, messages, next: null }));
   }
 };
@@ -104,20 +95,12 @@ export const fetchMessages = roomId => async (dispatch, getState) => {
   let response;
   try {
     if (next) {
-      response = await api.getMessages(next);
-      const messages = response.items.map(message => ({
-        id: message._id,
-        text: message.message,
-        time: message.created_at,
-        isMy: currentUserId === message.userId,
-        userId: message.userId,
-        isRead: message.isRead,
-      }));
+      response = await chatApi.getMessages(next);
+      const messages = transformMessages(response.items, currentUserId);
       dispatch(appendMessages({ roomId, messages, next: response.next }));
     } else {
       return;
     }
-
     return response;
   } catch (error) {
     console.log(error);
@@ -131,7 +114,7 @@ export const fetchMessagesForFirstTime = roomId => async (
   const currentUserId = getState().user.user._id;
   let response;
   try {
-    response = await api.getRoomMessages(roomId);
+    response = await chatApi.getRoomMessages(roomId);
     const messages = response.items.map(message => ({
       id: message._id,
       text: message.message,
@@ -157,20 +140,25 @@ export const sendMessage = (roomId, messageText) => async (
 ) => {
   try {
     const currentUserId = getState().user.user._id;
-    const response = await api.sendMessage(roomId, messageText);
-    const message = [
-      {
-        id: response._id,
-        text: response.message,
-        time: response.created_at,
-        isMy: currentUserId === response.userId,
-        userId: response.userId,
-        isRead: response.isRead,
-      },
-    ];
-
+    const response = await chatApi.sendMessage(roomId, messageText);
+    const message = [transformMessages(response, currentUserId)];
     dispatch(appendMessages({ roomId, messages: message }));
     return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const requestMessageRemoval = (roomId, messageId) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    const currentUserId = getState().user.user._id;
+    const res = await chatApi.deleteMessage(roomId, messageId, currentUserId);
+    if (res) {
+      dispatch(deleteMessage({ roomId, messageId }));
+    }
   } catch (error) {
     console.log(error);
   }
