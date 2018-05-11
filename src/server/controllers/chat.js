@@ -144,7 +144,7 @@ module.exports = function(db, io) {
     });
 
     requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
-      if (currentUser._id) {
+      if (currentUser && currentUser._id) {
         return getUserRooms(db, currentUser._id, params);
       } else {
         let { token } = socket.request.cookies;

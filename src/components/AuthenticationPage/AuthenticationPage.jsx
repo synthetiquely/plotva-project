@@ -7,7 +7,7 @@ import { Authentication } from '../Authentication/Authentication';
 
 export const AuthenticationPageComponent = ({ user }) => {
   if (user) {
-    return <Redirect to="/profile" />;
+    return <Redirect to="/chats" />;
   }
   return (
     <Layout

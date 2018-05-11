@@ -6,14 +6,17 @@ import * as MESSAGES from '../server/messages';
 class Api {
   constructor() {
     this.uniqueId = 0;
+    this._setupSocket();
+    this.auth();
+  }
 
+  auth() {
     this._connectPromise = fetch('/api/auth', { credentials: 'same-origin' })
       .then(response => response.json())
       .then(res => {
         if (res.token) {
           store.dispatch(decodeTokenAndSetUser(res.token));
         }
-        return this._setupSocket();
       })
       .catch(err => {
         console.error('Auth problems: ' + err.message);

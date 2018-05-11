@@ -34,7 +34,7 @@ export const fetchRooms = () => async (dispatch, getState) => {
   const currentUser = user && user.user;
 
   const res = await chatApi.getCurrentUserRooms(next);
-  if (res.items && res.items.length) {
+  if (res && res.items && res.items.length) {
     const rooms = await Promise.all(
       res.items.map(async room => {
         if (room) {

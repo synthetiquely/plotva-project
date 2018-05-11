@@ -26,6 +26,7 @@ export const decodeTokenAndSetUser = token => {
       type: SET_USER,
       user: decodedUser,
     };
+    chatApi.auth();
   } catch (error) {
     console.log('Ошибка при декодировании токена пользователя', error);
   }
