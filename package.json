@@ -43,7 +43,8 @@
     "uuid": "^3.2.1"
   },
   "scripts": {
-    "start": "concurrently \"yarn client\" \"yarn server\"",
+    "now-start": "node server.js",
+    "dev": "concurrently \"yarn client\" \"yarn server\"",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
