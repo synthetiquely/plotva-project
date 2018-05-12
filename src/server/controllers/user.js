@@ -31,9 +31,9 @@ const updateAvatar = (req, res) => {
             img: result.secure_url,
           };
           saveUser(req.db, userData).then(updatedUser => {
-            const token = generateToken(updatedUser);
-            apendCookies(res, 'token', token);
-            res.json({ token });
+            // const token = generateToken(updatedUser);
+            // apendCookies(res, 'token', token);
+            res.json({ user: updatedUser });
           });
         })
         .end(req.file.buffer);

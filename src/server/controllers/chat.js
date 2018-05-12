@@ -1,4 +1,4 @@
-const { findUserByToken, getUsers } = require('../database/user');
+const { findUserBySid, saveUser, getUsers } = require('../database/user');
 const {
   joinRoom,
   leaveRoom,
@@ -23,10 +23,7 @@ const TYPES = require('../messages');
 module.exports = function(db, io) {
   const ONLINE = {};
 
-  function fillUsersWithStatus(users, currentUser) {
-    if (currentUser) {
-      ONLINE[currentUser._id] = true;
-    }
+  function fillUsersWithStatus(users) {
     users.items = users.items.map(user => ({
       ...user,
       online: Boolean(ONLINE[user._id]),
@@ -36,29 +33,13 @@ module.exports = function(db, io) {
   }
 
   io.on('connection', async function(socket) {
-    // let isDisconnected = false;
-    let currentUser;
+    let { sid } = socket.request.cookies;
+    let isDisconnected = false;
 
     socket.join('broadcast');
 
-    async function identifyUserByToken() {
-      const { token } = socket.request.cookies;
-      if (token) {
-        currentUser = await findUserByToken(db, token);
-        if (currentUser) {
-          ONLINE[currentUser._id] = true;
-          userChangeOnlineStatus(currentUser._id);
-          let rooms = await getUserRooms(db, currentUser._id);
-          rooms.items.forEach(room => {
-            joinToRoomChannel(db, room._id);
-          });
-        }
-      } else {
-        return null;
-      }
-    }
-
-    currentUser = await identifyUserByToken().catch(error => {
+    // Load user information for next usage
+    let userPromise = findUserBySid(db, sid).catch(error => {
       throw new Error(`Cannot load user: ${error}`);
     });
 
@@ -86,8 +67,8 @@ module.exports = function(db, io) {
     function requestResponse(type, callback) {
       socket.on(
         type,
-        wrapCallback(async ({ id, payload, currentUser }) => {
-          socket.emit(type + id, await callback(payload, currentUser));
+        wrapCallback(async ({ id, payload }) => {
+          socket.emit(type + id, await callback(payload));
         }),
       );
     }
@@ -98,6 +79,10 @@ module.exports = function(db, io) {
         userId,
       });
     }
+
+    requestResponse(TYPES.USER_SAVE, async params => {
+      return await saveUser(db, params);
+    });
 
     function joinToRoomChannel(roomId) {
       socket.join('room:' + roomId);
@@ -129,44 +114,36 @@ module.exports = function(db, io) {
         .emit(TYPES.MESSAGES_DELETED, { roomId, messageId });
     }
 
-    requestResponse(TYPES.CURRENT_USER, () => currentUser);
+    requestResponse(TYPES.CURRENT_USER, () => userPromise);
 
-    requestResponse(TYPES.USERS, async (params, user) => {
-      currentUser = user;
-      if (currentUser) {
-        ONLINE[currentUser._id] = true;
-        userChangeOnlineStatus(currentUser._id);
-      }
-
-      return fillUsersWithStatus(await getUsers(db, params || {}), currentUser);
+    requestResponse(TYPES.USERS, async params => {
+      return fillUsersWithStatus(await getUsers(db, params || {}));
     });
 
-    requestResponse(TYPES.CREATE_ROOM, async (params, user) => {
-      return createRoom(db, currentUser ? currentUser : user, params);
+    requestResponse(TYPES.CREATE_ROOM, async params => {
+      let currentUser = await userPromise;
+      return createRoom(db, currentUser, params);
     });
 
     requestResponse(TYPES.ROOMS, params => {
       return getRooms(db, params || {});
     });
 
-    requestResponse(TYPES.CURRENT_USER_ROOMS, async (params, user) => {
-      currentUser = user;
-      if (currentUser) {
-        ONLINE[currentUser._id] = true;
-        userChangeOnlineStatus(currentUser._id);
-        return getUserRooms(db, currentUser._id, params);
-      } else {
-        return [];
-      }
+    requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
+      let currentUser = await userPromise;
+
+      return getUserRooms(db, currentUser._id, params);
     });
 
-    requestResponse(TYPES.CURRENT_USER_JOIN_ROOM, async (params, user) => {
+    requestResponse(TYPES.CURRENT_USER_JOIN_ROOM, async ({ roomId }) => {
+      let currentUser = await userPromise;
+
       let payload = {
-        roomId: params.roomId,
-        userId: currentUser ? currentUser._id : user._id,
+        roomId,
+        userId: currentUser._id,
       };
 
-      joinToRoomChannel(params.roomId);
+      joinToRoomChannel(roomId);
       userWasJoinedToRoom(payload);
 
       return joinRoom(db, payload);
@@ -179,22 +156,26 @@ module.exports = function(db, io) {
       return joinRoom(db, payload);
     });
 
-    requestResponse(TYPES.CURRENT_USER_LEAVE_ROOM, async (params, user) => {
+    requestResponse(TYPES.CURRENT_USER_LEAVE_ROOM, async ({ roomId }) => {
+      let currentUser = await userPromise;
+
       let payload = {
-        roomId: params.roomId,
-        userId: currentUser ? currentUser._id : user._id,
+        roomId,
+        userId: currentUser._id,
       };
 
-      leaveRoomChannel(params.roomId);
+      leaveRoomChannel(roomId);
       userLeaveRoom(payload);
 
       return leaveRoom(db, payload);
     });
 
-    requestResponse(TYPES.SEND_MESSAGE, async (payload, user) => {
+    requestResponse(TYPES.SEND_MESSAGE, async payload => {
+      let currentUser = await userPromise;
+
       let message = await sendMessage(db, {
         ...payload,
-        userId: currentUser ? currentUser._id : user._id,
+        userId: currentUser._id,
         isRead: false,
       });
       newMessage(message);
@@ -208,6 +189,8 @@ module.exports = function(db, io) {
     });
 
     requestResponse(TYPES.READ_MESSAGE, async payload => {
+      let currentUser = await userPromise;
+
       if (payload.message.userId === currentUser._id) {
         return;
       } else {
@@ -223,13 +206,28 @@ module.exports = function(db, io) {
       getLastMessage(db, payload),
     );
 
-    socket.on('disconnect', async () => {
-      // isDisconnected = true;
-      if (currentUser) {
-        ONLINE[currentUser._id] = false;
-
-        userChangeOnlineStatus(currentUser._id);
+    userPromise.then(async user => {
+      if (!isDisconnected) {
+        ONLINE[user._id] = true;
       }
+
+      userChangeOnlineStatus(user._id);
+
+      // Get of user groups
+      let rooms = await getUserRooms(db, user._id);
+
+      rooms.items.forEach(room => {
+        joinToRoomChannel(db, room._id);
+      });
+    });
+
+    socket.on('disconnect', async () => {
+      isDisconnected = true;
+      let user = await userPromise;
+
+      ONLINE[user._id] = false;
+
+      userChangeOnlineStatus(user._id);
     });
   });
 };

@@ -1,28 +1,12 @@
 import io from 'socket.io-client';
-import { store } from '../store/store';
-import { decodeTokenAndSetUser } from '../store/actions/userActions';
 import * as MESSAGES from '../server/messages';
-import { registerSocketEventListeners } from '../registerSocketEventListeners';
 
 class Api {
   constructor() {
     this.uniqueId = 0;
-    this.auth();
-    this._setupSocket();
-    this.currentUser = null;
-  }
 
-  async auth() {
-    return fetch('/api/auth', { credentials: 'same-origin' })
-      .then(response => response.json())
-      .then(res => {
-        if (res.token) {
-          store.dispatch(decodeTokenAndSetUser(res.token));
-          registerSocketEventListeners(store);
-          this.currentUser = store.getState().user.user;
-        }
-        return res;
-      })
+    this._connectPromise = fetch('/api/auth', { credentials: 'same-origin' })
+      .then(() => this._setupSocket())
       .catch(err => {
         console.error('Auth problems: ' + err.message);
 
@@ -43,10 +27,10 @@ class Api {
   }
 
   async _requestResponse(type, payload) {
-    await this.auth;
+    await this._connectPromise;
 
     let id = this.uniqueId++;
-    let envelop = { payload, id, currentUser: this.currentUser };
+    let envelop = { payload, id };
 
     return new Promise(resolve => {
       this.io.once(type + id, resolve);
@@ -128,38 +112,41 @@ class Api {
     return this._requestResponse(MESSAGES.GET_LAST_MESSAGE, roomId);
   }
 
-  async onUserChangeStatus(callback) {
-    await this.auth;
+  async saveUser(user) {
+    return this._requestResponse(MESSAGES.USER_SAVE, user);
+  }
 
+  async onUserChangeStatus(callback) {
+    await this._connectPromise;
     this.io.on(MESSAGES.ONLINE, callback);
   }
 
   async onUserJoinedRoom(callback) {
-    await this.auth;
+    await this._connectPromise;
 
     this.io.on(MESSAGES.USER_JOINED, callback);
   }
 
   async onUserLeavedRoom(callback) {
-    await this.auth;
+    await this._connectPromise;
 
     this.io.on(MESSAGES.USER_LEAVED, callback);
   }
 
   async onMessage(callback) {
-    await this.auth;
+    await this._connectPromise;
 
     this.io.on(MESSAGES.MESSAGE, callback);
   }
 
   async onDeleteMessage(callback) {
-    await this.auth;
+    await this._connectPromise;
 
     this.io.on(MESSAGES.MESSAGES_DELETED, callback);
   }
 
   async onReadMessage(callback) {
-    await this.auth;
+    await this._connectPromise;
 
     this.io.on(MESSAGES.MESSAGE_READ, callback);
   }

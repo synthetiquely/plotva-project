@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('socket.io-cookie-parser');
 const cookie = require('cookie-parser');
 const cloudinary = require('cloudinary');
+const uuid = require('uuid/v4');
 
 const app = express();
 const http = require('http').Server(app);
@@ -13,7 +14,7 @@ require('dotenv').config();
 const { connect } = require('./database');
 
 const chatController = require('./controllers/chat');
-const authRouter = require('./routes/auth');
+// const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 
 exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
@@ -38,7 +39,18 @@ exports.createServer = function(serverConfig, databaseConfig, apiProvider) {
         next();
       });
 
-      app.use('/api/auth', authRouter);
+      app.get('/api/auth', function(req, res) {
+        if (!req.cookies.sid) {
+          res.cookie('sid', uuid(), {
+            httpOnly: true,
+            path: '/',
+            maxAge: 24 * 7 * 3600000, // 1 week
+          });
+        }
+
+        res.json({});
+      });
+
       app.use('/api/user', userRouter);
       chatController(db, io);
 

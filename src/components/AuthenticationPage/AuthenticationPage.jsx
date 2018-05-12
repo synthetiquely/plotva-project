@@ -1,20 +1,12 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Layout } from '../Layout/Layout';
-import { Header } from '../Header/Header';
-import { Authentication } from '../Authentication/Authentication';
 
 export const AuthenticationPageComponent = ({ user }) => {
-  if (user) {
-    return <Redirect to="/chats" />;
+  if (user.isFirstLogin) {
+    return <Redirect to="/profile" />;
   }
-  return (
-    <Layout
-      header={<Header type="profile" title="Добро пожаловать" subtitle="" />}
-      content={<Authentication />}
-    />
-  );
+  return <Redirect to="/chats" />;
 };
 
 const stateToProps = state => ({

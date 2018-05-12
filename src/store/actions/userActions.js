@@ -36,24 +36,23 @@ export const decodeTokenAndSetUser = token => {
 
 export const updateAvatar = avatar => async dispatch => {
   const res = await userApi.updateAvatar(avatar);
-  if (res.token) {
-    dispatch(decodeTokenAndSetUser(res.token));
+  if (res.user) {
+    dispatch(setUser(res.user));
   }
 };
 
 export const updateProfile = userData => async dispatch => {
-  const res = await userApi.updateProfile(userData);
-  if (res.token) {
-    dispatch(decodeTokenAndSetUser(res.token));
-  }
+  return await chatApi.saveUser(userData).then(updatedUser => {
+    dispatch(setUser(updatedUser));
+  });
 };
 
 export const logout = () => async dispatch => {
   await userApi.logout();
   await chatApi.disconnectSocket();
   dispatch(setUser(null));
-  dispatch(clearRooms(null));
-  dispatch(clearMessages(null));
+  dispatch(clearRooms());
+  dispatch(clearMessages());
 };
 
 export const fetchUsers = () => async (dispatch, getState) => {

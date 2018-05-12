@@ -7,8 +7,8 @@ const {
   MONGO_PASSWORD = '',
   MONGO_LOCAL = 'false',
   MONGO_DATABASE = 'yandex-messenger',
-  MONGO_HOST = 'ds163119.mlab.com',
-  MONGO_PORT = 63119,
+  MONGO_HOST = 'ds219000.mlab.com',
+  MONGO_PORT = 19000,
   SERVER_HOST = 'localhost',
   SERVER_PORT = 3001,
 } = process.env;

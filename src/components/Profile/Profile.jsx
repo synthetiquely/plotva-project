@@ -5,7 +5,6 @@ import { ProfileEdit } from '../ProfileEdit/ProfileEdit';
 import { ProfileAvatar } from '../ProfileAvatar/ProfileAvatar';
 import { Spinner } from '../Spinner/Spinner';
 import { Error } from '../Error/Error';
-import { Icon } from '../Icon/Icon';
 import { UPDATE_USER_ERROR } from '../../errorCodes';
 import {
   updateAvatar,
@@ -28,6 +27,14 @@ class ProfileComponent extends Component {
     this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
     this.handleChangeProfile = this.handleChangeProfile.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.edit) {
+      this.setState({
+        edit: this.props.edit,
+      });
+    }
   }
 
   toggleEdit() {
@@ -67,6 +74,7 @@ class ProfileComponent extends Component {
         });
       })
       .catch(error => {
+        console.log('error', error);
         this.setState({
           isLoading: false,
           error,
@@ -87,9 +95,6 @@ class ProfileComponent extends Component {
     return (
       <React.Fragment>
         <div className="profile-info">
-          <button onClick={this.handleLogout} className="profile-info_logout">
-            <Icon type="logout" />
-          </button>
           <ProfileAvatar
             image={user.img ? user.img : defaultAvatar}
             changeAvatar={this.handleChangeAvatar}
