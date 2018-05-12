@@ -3,6 +3,7 @@ import {
   MESSAGES_APPENDED,
   MESSAGE_SELECTED,
   MESSAGE_DELETED,
+  MESSAGES_CLEARED,
 } from './actionTypes';
 import chatApi from '../../api/chat';
 import { transformMessages } from '../../utils/transormations';
@@ -25,6 +26,10 @@ export const selectMessage = payload => ({
 export const deleteMessage = payload => ({
   type: MESSAGE_DELETED,
   payload,
+});
+
+export const clearMessages = () => ({
+  type: MESSAGES_CLEARED,
 });
 
 export const updateMessage = payload => (dispatch, getState) => {

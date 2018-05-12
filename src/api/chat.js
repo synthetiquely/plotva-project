@@ -8,17 +8,20 @@ class Api {
   constructor() {
     this.uniqueId = 0;
     this.auth();
+    this._setupSocket();
+    this.currentUser = null;
   }
 
-  auth() {
-    this._connectPromise = fetch('/api/auth', { credentials: 'same-origin' })
+  async auth() {
+    return fetch('/api/auth', { credentials: 'same-origin' })
       .then(response => response.json())
       .then(res => {
         if (res.token) {
           store.dispatch(decodeTokenAndSetUser(res.token));
-          this._setupSocket();
           registerSocketEventListeners(store);
+          this.currentUser = store.getState().user.user;
         }
+        return res;
       })
       .catch(err => {
         console.error('Auth problems: ' + err.message);
@@ -35,11 +38,15 @@ class Api {
     });
   }
 
+  async disconnectSocket() {
+    this.io.disconnect();
+  }
+
   async _requestResponse(type, payload) {
-    await this._connectPromise;
+    await this.auth;
 
     let id = this.uniqueId++;
-    let envelop = { payload, id };
+    let envelop = { payload, id, currentUser: this.currentUser };
 
     return new Promise(resolve => {
       this.io.once(type + id, resolve);
@@ -122,37 +129,37 @@ class Api {
   }
 
   async onUserChangeStatus(callback) {
-    await this._connectPromise;
+    await this.auth;
 
     this.io.on(MESSAGES.ONLINE, callback);
   }
 
   async onUserJoinedRoom(callback) {
-    await this._connectPromise;
+    await this.auth;
 
     this.io.on(MESSAGES.USER_JOINED, callback);
   }
 
   async onUserLeavedRoom(callback) {
-    await this._connectPromise;
+    await this.auth;
 
     this.io.on(MESSAGES.USER_LEAVED, callback);
   }
 
   async onMessage(callback) {
-    await this._connectPromise;
+    await this.auth;
 
     this.io.on(MESSAGES.MESSAGE, callback);
   }
 
   async onDeleteMessage(callback) {
-    await this._connectPromise;
+    await this.auth;
 
     this.io.on(MESSAGES.MESSAGES_DELETED, callback);
   }
 
   async onReadMessage(callback) {
-    await this._connectPromise;
+    await this.auth;
 
     this.io.on(MESSAGES.MESSAGE_READ, callback);
   }

@@ -3,6 +3,8 @@ import * as userApi from '../../api/user';
 import chatApi from '../../api/chat';
 import { SET_USER, SET_USERS, SET_SELECTED } from './actionTypes';
 import { transformUsers } from '../../utils/transormations';
+import { clearRooms } from './roomsActions';
+import { clearMessages } from './messagesActions';
 
 export const setUser = user => ({
   type: SET_USER,
@@ -48,7 +50,10 @@ export const updateProfile = userData => async dispatch => {
 
 export const logout = () => async dispatch => {
   await userApi.logout();
+  await chatApi.disconnectSocket();
   dispatch(setUser(null));
+  dispatch(clearRooms(null));
+  dispatch(clearMessages(null));
 };
 
 export const fetchUsers = () => async (dispatch, getState) => {

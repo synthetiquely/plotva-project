@@ -1,4 +1,9 @@
-import { ROOMS_SET, NEW_ROOM_NAME_SET, ROOM_APPENDED } from './actionTypes';
+import {
+  ROOMS_SET,
+  NEW_ROOM_NAME_SET,
+  ROOM_APPENDED,
+  ROOMS_CLEARED,
+} from './actionTypes';
 import { fetchLastMessage } from './messagesActions';
 import chatApi from '../../api/chat';
 import { transformRooms } from '../../utils/transormations';
@@ -16,6 +21,10 @@ export const appendRoom = payload => ({
 export const setNewRoomName = payload => ({
   type: NEW_ROOM_NAME_SET,
   payload,
+});
+
+export const clearRooms = () => ({
+  type: ROOMS_CLEARED,
 });
 
 export const createRoom = room => async (dispatch, getState) => {

@@ -10,6 +10,7 @@ import { AUTHENTICATION_ERROR } from '../../errorCodes';
 import { connect } from 'react-redux';
 import { decodeTokenAndSetUser } from '../../store/actions/userActions';
 import { signin, signup } from '../../api/auth';
+import chatApi from '../../api/chat';
 
 import './styles.css';
 
@@ -34,46 +35,48 @@ export class AuthenticationComponent extends Component {
     }));
   }
 
-  handleSignin(signinData) {
+  async handleSignin(signinData) {
     this.setState({
       isLoading: true,
     });
 
-    signin(signinData)
-      .then(response => {
-        this.props.decodeTokenAndSetUser(response.token);
-        this.setState({
-          isLoading: false,
-        });
-        this.props.history.push('/chats');
-      })
-      .catch(error => {
-        this.setState({
-          error,
-          isLoading: false,
-        });
+    try {
+      const response = await signin(signinData);
+      this.props.decodeTokenAndSetUser(response.token);
+      await chatApi.auth();
+      await chatApi._setupSocket();
+      this.setState({
+        isLoading: false,
       });
+      this.props.history.push('/chats');
+    } catch (error) {
+      this.setState({
+        error,
+        isLoading: false,
+      });
+    }
   }
 
-  handleSignup(signupData) {
+  async handleSignup(signupData) {
     this.setState({
       isLoading: true,
     });
+    try {
+      const response = await signup(signupData);
 
-    signup(signupData)
-      .then(response => {
-        this.props.decodeTokenAndSetUser(response.token);
-        this.setState({
-          isLoading: false,
-        });
-        this.props.history.push('/chats');
-      })
-      .catch(error => {
-        this.setState({
-          error,
-          isLoading: false,
-        });
+      this.props.decodeTokenAndSetUser(response.token);
+      await chatApi.auth();
+      await chatApi._setupSocket();
+      this.setState({
+        isLoading: false,
       });
+      this.props.history.push('/chats');
+    } catch (error) {
+      this.setState({
+        error,
+        isLoading: false,
+      });
+    }
   }
 
   render() {

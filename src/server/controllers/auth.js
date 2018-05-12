@@ -13,6 +13,7 @@ const cookie = async (req, res) => {
   }
 
   const { token } = req.cookies;
+
   if (token) {
     res.json({
       token,

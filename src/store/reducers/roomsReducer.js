@@ -2,6 +2,7 @@ import {
   ROOMS_SET,
   NEW_ROOM_NAME_SET,
   ROOM_APPENDED,
+  ROOMS_CLEARED,
 } from '../actions/actionTypes';
 
 const defaultState = {
@@ -12,6 +13,8 @@ const defaultState = {
 
 export const roomsReducer = (state = defaultState, action) => {
   switch (action.type) {
+    case ROOMS_CLEARED:
+      return defaultState;
     case ROOM_APPENDED:
       return {
         ...state,

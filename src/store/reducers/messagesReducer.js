@@ -3,6 +3,7 @@ import {
   MESSAGES_APPENDED,
   MESSAGE_SELECTED,
   MESSAGE_DELETED,
+  MESSAGES_CLEARED,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -11,6 +12,8 @@ const initialState = {
 
 export const messagesReducer = (state = initialState, action) => {
   switch (action.type) {
+    case MESSAGES_CLEARED:
+      return initialState;
     case MESSAGE_SELECTED:
       return {
         ...state,

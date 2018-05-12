@@ -27,7 +27,6 @@ module.exports = function(db, io) {
     if (currentUser) {
       ONLINE[currentUser._id] = true;
     }
-    console.log('users', ONLINE);
     users.items = users.items.map(user => ({
       ...user,
       online: Boolean(ONLINE[user._id]),
@@ -47,7 +46,6 @@ module.exports = function(db, io) {
       if (token) {
         currentUser = await findUserByToken(db, token);
         if (currentUser) {
-          console.log('hui', currentUser);
           ONLINE[currentUser._id] = true;
           userChangeOnlineStatus(currentUser._id);
           let rooms = await getUserRooms(db, currentUser._id);
@@ -88,8 +86,8 @@ module.exports = function(db, io) {
     function requestResponse(type, callback) {
       socket.on(
         type,
-        wrapCallback(async ({ id, payload }) => {
-          socket.emit(type + id, await callback(payload));
+        wrapCallback(async ({ id, payload, currentUser }) => {
+          socket.emit(type + id, await callback(payload, currentUser));
         }),
       );
     }
@@ -133,34 +131,42 @@ module.exports = function(db, io) {
 
     requestResponse(TYPES.CURRENT_USER, () => currentUser);
 
-    requestResponse(TYPES.USERS, async params => {
+    requestResponse(TYPES.USERS, async (params, user) => {
+      currentUser = user;
+      if (currentUser) {
+        ONLINE[currentUser._id] = true;
+        userChangeOnlineStatus(currentUser._id);
+      }
+
       return fillUsersWithStatus(await getUsers(db, params || {}), currentUser);
     });
 
-    requestResponse(TYPES.CREATE_ROOM, async params => {
-      return createRoom(db, currentUser, params);
+    requestResponse(TYPES.CREATE_ROOM, async (params, user) => {
+      return createRoom(db, currentUser ? currentUser : user, params);
     });
 
     requestResponse(TYPES.ROOMS, params => {
       return getRooms(db, params || {});
     });
 
-    requestResponse(TYPES.CURRENT_USER_ROOMS, async params => {
-      if (currentUser && currentUser._id) {
+    requestResponse(TYPES.CURRENT_USER_ROOMS, async (params, user) => {
+      currentUser = user;
+      if (currentUser) {
+        ONLINE[currentUser._id] = true;
+        userChangeOnlineStatus(currentUser._id);
         return getUserRooms(db, currentUser._id, params);
       } else {
-        const currentUser = await identifyUserByToken();
-        return getUserRooms(db, currentUser._id, params);
+        return [];
       }
     });
 
-    requestResponse(TYPES.CURRENT_USER_JOIN_ROOM, async ({ roomId }) => {
+    requestResponse(TYPES.CURRENT_USER_JOIN_ROOM, async (params, user) => {
       let payload = {
-        roomId,
-        userId: currentUser._id,
+        roomId: params.roomId,
+        userId: currentUser ? currentUser._id : user._id,
       };
 
-      joinToRoomChannel(roomId);
+      joinToRoomChannel(params.roomId);
       userWasJoinedToRoom(payload);
 
       return joinRoom(db, payload);
@@ -173,22 +179,22 @@ module.exports = function(db, io) {
       return joinRoom(db, payload);
     });
 
-    requestResponse(TYPES.CURRENT_USER_LEAVE_ROOM, async ({ roomId }) => {
+    requestResponse(TYPES.CURRENT_USER_LEAVE_ROOM, async (params, user) => {
       let payload = {
-        roomId,
-        userId: currentUser._id,
+        roomId: params.roomId,
+        userId: currentUser ? currentUser._id : user._id,
       };
 
-      leaveRoomChannel(roomId);
+      leaveRoomChannel(params.roomId);
       userLeaveRoom(payload);
 
       return leaveRoom(db, payload);
     });
 
-    requestResponse(TYPES.SEND_MESSAGE, async payload => {
+    requestResponse(TYPES.SEND_MESSAGE, async (payload, user) => {
       let message = await sendMessage(db, {
         ...payload,
-        userId: currentUser._id,
+        userId: currentUser ? currentUser._id : user._id,
         isRead: false,
       });
       newMessage(message);
